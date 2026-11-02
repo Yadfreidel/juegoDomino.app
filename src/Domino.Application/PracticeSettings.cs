@@ -11,7 +11,7 @@ public sealed record PracticeSettings
     public int TurnSeconds { get; init; }
     public int Bonus { get; init; }=25;
     public string Difficulty { get; init; }="intermediate";
-    public string Environment { get; init; }="courtyard";
+    public string Environment { get; init; }="club";
     public bool QuickMessages { get; init; }=true;
     // "ana", "carlos", "luis" or "random": which bot sits in front of the human as partner.
     public string Partner { get; init; }="ana";
@@ -29,7 +29,7 @@ public sealed record PracticeSettings
         if(TurnSeconds is not (0 or 15 or 30 or 45))return "Elige sin límite, 15, 30 o 45 segundos.";
         if(Bonus is not (0 or 25 or 30))return "El bono debe ser 0, 25 o 30.";
         if(Difficulty is not ("easy" or "intermediate" or "hard"))return "Dificultad no disponible.";
-        if(Environment is not ("courtyard" or "terrace"))return "Ese escenario no está disponible.";
+        if(Environment is not ("club" or "courtyard" or "terrace"))return "Ese escenario no está disponible.";
         if(Partner is not ("ana" or "carlos" or "luis" or "random"))return "Elige una pareja válida.";
         if(NextOpener is not ("winner" or "rotate" or "double-six"))return "Salida de manos posteriores no reconocida.";
         if(Counting is not ("all" or "opponents"))return "Conteo no reconocido.";

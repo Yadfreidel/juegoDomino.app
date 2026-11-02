@@ -1,9 +1,9 @@
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
-import {layoutChain,footprint,BOARD,previewTile,tilePose} from '../../src/Domino.Desktop/wwwroot/chain-layout.js';
+import {layoutChain,footprint,BOARD,BOARDS,previewTile,tilePose} from '../../src/Domino.Desktop/wwwroot/chain-layout.js';
 import {legalEnds} from '../../src/Domino.Desktop/wwwroot/placement-controller.js';
 import {TableCamera,LOOK_LIMITS,TILE_PIXELS_MIN} from '../../src/Domino.Desktop/wwwroot/camera-controller.js';
-import {TABLE} from '../../src/Domino.Desktop/wwwroot/table-model.js';
+import {TABLE,TABLE_LAYOUTS} from '../../src/Domino.Desktop/wwwroot/table-model.js';
 import {newEvents} from '../../src/Domino.Desktop/wwwroot/table-chat.js';
 import {rulesSummary,isDefaultRules,changedConditions,RULE_DEFAULTS} from '../../src/Domino.Desktop/wwwroot/table-roster.js';
 import {PerspectiveCamera,Vector3} from '../../src/Domino.Desktop/wwwroot/vendor/three.module.js';
@@ -37,8 +37,30 @@ test('encuadre elevado: mesa ~90 % del ancho útil y paño entre marcador y mano
     for(const [x,z,y] of TABLE.playArea){const p=view.project(new Vector3(x,y,z));assert.ok(p.y>=top-2&&p.y<=h-bottom+2&&p.x>=0&&p.x<=w,`zona de juego visible ${w}x${h} (${x},${z}) → ${p.x.toFixed(0)},${p.y.toFixed(0)}`);}
     assert.ok(view.camera.position.z>0&&view.camera.position.y>TABLE.frameTop+3,'Siempre desde el lado del jugador y por encima');
   }
-  const {view}=viewFor(390,844,{top:100,bottom:230,left:8,right:8});
-  const xs=TABLE.outline.map(([x,z])=>view.project(new Vector3(x,TABLE.frameTop,z)).x);assert.ok(Math.max(...xs)-Math.min(...xs)>=.85*374,'Vertical: ancho completo');
+});
+test('vertical: mesa alta, casi todo el ancho y toda la zona de juego entre marcador y mano',()=>{
+  const portrait=TABLE_LAYOUTS.portrait;
+  // Portrait phones: score row ~60 px on top; turn pills + rack ~250 px at the bottom.
+  for(const [w,h,top,bottom] of [[360,800,60,250],[390,844,60,255],[430,932,62,270]]) {
+    const {view}=viewFor(w,h,{top,bottom,left:8,right:8});view.setTable(portrait);view.update(1,true);
+    const xs=portrait.outline.map(([x,z])=>view.project(new Vector3(x,portrait.frameTop,z)).x);
+    assert.ok(Math.max(...xs)-Math.min(...xs)>=.8*(w-16),`ancho ${w}x${h}`);
+    for(const [x,z,y] of portrait.playArea){const p=view.project(new Vector3(x,y,z));assert.ok(p.y>=top-2&&p.y<=h-bottom+2&&p.x>=0&&p.x<=w,`zona de juego ${w}x${h} (${x},${z})`);}
+    assert.ok(view.camera.position.z>0,'Siempre desde mi lado: mi asiento sigue abajo');
+  }
+});
+test('cadena vertical: mismo orden y conexiones, sin solapes y dentro del tablero alto',()=>{
+  for(let count=1;count<=28;count++) {
+    const chain=Array.from({length:count},(_,i)=>({left:i%7,right:(i+1)%7}));
+    const wide=layoutChain(chain,'landscape'),tall=layoutChain(chain,'portrait'),placed=tall.placements.map(footprint);
+    assert.equal(tall.placements.length,wide.placements.length);
+    for(const p of placed)assert.ok(Math.abs(p.x)+p.halfX<=BOARDS.portrait.halfWidth+.01&&Math.abs(p.z)+p.halfZ<=BOARDS.portrait.halfDepth+.01,`límites ${count}`);
+    for(let i=0;i<placed.length;i++)for(let j=0;j<i;j++){const a=placed[i],b=placed[j];assert.ok(Math.abs(a.x-b.x)>=a.halfX+b.halfX+.005||Math.abs(a.z-b.z)>=a.halfZ+b.halfZ+.005,`solape ${count} ${i}/${j}`);}
+    // Consecutive tiles stay neighbours: the chain is the same path, only turned.
+    for(let i=1;i<count;i++){const a=tall.placements[i-1],b=tall.placements[i];assert.ok(Math.hypot(a.x-b.x,a.z-b.z)<1.3,`conexión ${count} ${i}`);}
+    for(const end of ['left','right'])assert.ok(Number.isFinite(tall.destinations[end].x),'dos puntas');
+  }
+  assert.deepEqual(BOARDS.landscape,BOARD);
 });
 test('mirar acotado, inspección legible y pantalla↔mesa con canvas desplazado',()=>{
   const {view,camera,rect}=viewFor(1440,900,{top:130,bottom:230,left:8,right:8});

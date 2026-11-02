@@ -33,10 +33,10 @@ export function createTableMaterials(textures) {
   const varnish={clearcoat:.45,clearcoatRoughness:.24};
   const materials={
     // Walnut scan tinted toward a deep mahogany; the clear coat gives the varnish a soft second highlight.
-    wood:new THREE.MeshPhysicalMaterial({color:'#c46a4a',...wood,roughness:.62,normalScale:new THREE.Vector2(.55,.55),...varnish}),
-    darkWood:new THREE.MeshPhysicalMaterial({color:'#7a3a28',...wood,roughness:.7,normalScale:new THREE.Vector2(.5,.5),...varnish,clearcoat:.3}),
+    wood:new THREE.MeshPhysicalMaterial({color:'#b04a2a',...wood,roughness:.78,normalScale:new THREE.Vector2(.55,.55),...varnish}),
+    darkWood:new THREE.MeshPhysicalMaterial({color:'#6a2a18',...wood,roughness:.7,normalScale:new THREE.Vector2(.5,.5),...varnish,clearcoat:.3}),
     // Fine woven cloth: albedo is greyscale so the colour lives here; fully matte.
-    felt:new THREE.MeshStandardMaterial({color:'#2b7343',...felt,roughness:1.2,normalScale:new THREE.Vector2(.9,.9)}),
+    felt:new THREE.MeshStandardMaterial({color:'#24418c',...felt,roughness:1.2,normalScale:new THREE.Vector2(.9,.9)}),
     brass:new THREE.MeshStandardMaterial({color:'#c9a25e',metalness:1,roughness:.38}),
     red:new THREE.MeshStandardMaterial({color:'#ce1126',roughness:.5}),
     white:new THREE.MeshStandardMaterial({color:'#f2eee4',roughness:.5}),
@@ -64,8 +64,8 @@ export function createTileMaterials() {
     ivory,grain,roughness,
     // Painted cavities: near black, rough enough that no highlight hides a pip.
     ink:new THREE.MeshStandardMaterial({color:'#0b0a09',roughness:.78,side:THREE.DoubleSide}),
-    // Low-contrast inlay on reverses: a dark mark there would read as a pip and suggest a value.
-    emblem:new THREE.MeshStandardMaterial({color:'#d8bf8c',roughness:.45}),
+    // Blue lacquered back, the same on every reverse: a lattice and border, nothing that could read as a pip.
+    back:new THREE.MeshStandardMaterial({map:reversePattern(),roughness:.38}),
     contact:new THREE.MeshBasicMaterial({map:softShadowTexture(128,64,.26,.36),transparent:true,depthWrite:false,toneMapped:false,opacity:.78,polygonOffset:true,polygonOffsetFactor:-1}),
     // Placement preview: a light mint tint over ivory, translucent but with fully dark pips.
     ghostIvory:new THREE.MeshStandardMaterial({color:'#cdeedb',transparent:true,opacity:.62,depthWrite:false,roughness:.5,emissive:'#2f7152',emissiveIntensity:.18}),
@@ -99,6 +99,15 @@ export function softShadowTexture(width,height,inner,soft,invert=false) {
   const texture=new THREE.CanvasTexture(canvas);texture.colorSpace=THREE.SRGBColorSpace;return texture;
 }
 
+function reversePattern() {
+  const w=256,h=128,canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;const ctx=canvas.getContext('2d');
+  const fill=ctx.createLinearGradient(0,0,w,h);fill.addColorStop(0,'#1c4fc4');fill.addColorStop(1,'#0c2a78');ctx.fillStyle=fill;ctx.fillRect(0,0,w,h);
+  ctx.strokeStyle='rgba(170,200,255,.28)';ctx.lineWidth=2;
+  for(let x=-h;x<w+h;x+=22){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x+h,h);ctx.stroke();ctx.beginPath();ctx.moveTo(x+h,0);ctx.lineTo(x,h);ctx.stroke();}
+  ctx.strokeStyle='rgba(245,244,239,.85)';ctx.lineWidth=5;ctx.strokeRect(9,9,w-18,h-18);
+  ctx.strokeStyle='rgba(245,244,239,.35)';ctx.lineWidth=2;ctx.strokeRect(17,17,w-34,h-34);
+  const t=new THREE.CanvasTexture(canvas);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t;
+}
 function seeded(seed){return()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296;};}
 // Tileable value noise, summed over a few octaves.
 function noiseField(size,seed,octaves) {

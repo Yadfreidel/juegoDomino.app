@@ -24,7 +24,7 @@ export function rulesSummary(s) {
 
 export function conditionsSummary(s) {
   const difficulty=s.difficulty==='easy'?'fáciles':s.difficulty==='hard'?'difíciles':'intermedios';
-  return `Meta ${s.target} · ${s.turnSeconds?s.turnSeconds+' s por turno (al vencer se juega la menor ficha legal)':'Sin límite de tiempo'} · ${s.environment==='terrace'?'Terraza frente al mar':'Patio de barrio'} · Bots ${difficulty} · Mensajes ${s.quickMessages?'activados':'desactivados'}`;
+  return `Meta ${s.target} · ${s.turnSeconds?s.turnSeconds+' s por turno (al vencer se juega la menor ficha legal)':'Sin límite de tiempo'} · ${s.environment==='terrace'?'Terraza frente al mar':s.environment==='club'?'Club de dominó':'Patio de barrio'} · Bots ${difficulty} · Mensajes ${s.quickMessages?'activados':'desactivados'}`;
 }
 
 // Lists which conditions differ, so a host edit is announced instead of applied silently.

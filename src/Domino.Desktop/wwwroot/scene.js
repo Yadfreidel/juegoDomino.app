@@ -2,7 +2,7 @@ import * as THREE from './vendor/three.module.js';
 import {TILE,layoutChain,tilePose,previewTile,footprint} from './chain-layout.js';
 import {TableCamera} from './camera-controller.js';
 import {TilePresenter} from './tile-presenter.js';
-import {DominoTableModel,TABLE} from './table-model.js';
+import {DominoTableModel,TABLE,TABLE_LAYOUTS} from './table-model.js';
 import {mergeGeometries} from './vendor/utils/BufferGeometryUtils.js';
 import {TableLighting} from './lighting.js';
 import {SurfaceTextures,createTableMaterials,disposeMaterials,setClearcoat} from './materials.js';
@@ -27,11 +27,18 @@ export class PatioScene {
     this.stone=this.mat('#b7a18b',{map:this.texture('stone'),roughness:1});this.leaf=this.mat('#244d2d',{roughness:.9,side:THREE.DoubleSide});
     this.lighting=new TableLighting(this.renderer,this.scene);
     this.buildSky();this.buildTerrace();this.buildCourtyard();this.batchEnvironment();
+    // Everything built so far is the open-air scenery; the club room is the alternative backdrop.
+    this.outdoor=new THREE.Group();for(const child of [...this.scene.children])if(child!==this.dynamic&&child!==this.lighting.group)this.outdoor.add(child);this.scene.add(this.outdoor);
+    this.buildClub();
     this.tiles=new TilePresenter();this.surfaces=new SurfaceTextures();this.tableMaterials=createTableMaterials(this.surfaces);
-    this.table=new DominoTableModel(this.tiles,this.tableMaterials);this.scene.add(this.table.group);
+    // One table per orientation, built once. Switching only changes which one is shown and how the chain is laid out.
+    this.tables={};for(const [name,layout] of Object.entries(TABLE_LAYOUTS)){const table=new DominoTableModel(this.tiles,this.tableMaterials,layout);table.group.visible=false;this.tables[name]=table;this.scene.add(table.group);}
+    this.orientation=null;this.table=this.tables.landscape;
     const {coated,...surfaces}=this.tableMaterials,tileMaterials=this.tiles.materials;
-    this.lighting.reflect([...Object.values(surfaces),...tileMaterials.ivory,tileMaterials.ink,tileMaterials.emblem,tileMaterials.ghostIvory,tileMaterials.ghostInk]);
-    this.table.onChange=()=>{this.renderer.shadowMap.needsUpdate=true;};
+    this.lighting.reflect([...Object.values(surfaces),...tileMaterials.ivory,tileMaterials.ink,tileMaterials.back,tileMaterials.ghostIvory,tileMaterials.ghostInk]);
+    // Seen from above, the varnish would mirror the bright room ceiling and wash the mahogany out.
+    for(const m of coated)m.envMapIntensity=.28;
+    for(const table of Object.values(this.tables))table.onChange=()=>{this.renderer.shadowMap.needsUpdate=true;};
     this.tileNodes=new Map();this.motion=[];
     this.ghosts={left:this.tiles.face(0,0,this.dynamic,true),right:this.tiles.face(0,0,this.dynamic,true)};
     this.dragTile=this.tiles.face(0,0,this.dynamic,true);this.dragTile.visible=false;this.dragTarget=new THREE.Vector3();this.dragActive=false;
@@ -99,7 +106,25 @@ export class PatioScene {
     for(const x of [-6,-3,3,6])this.lantern(x,2.7,-9.85,.6);
     this.courtyard.visible=false;
   }
-  setEnvironment(name) {this.courtyard.visible=name==='courtyard';this.ocean.visible=name!=='courtyard';this.fortGroup.visible=name!=='courtyard';}
+  // Dark tournament room: night-blue walls, thin blue and red light strips far away, a soft rug under the table.
+  buildClub() {
+    const g=new THREE.Group();this.club=g;this.scene.add(g);
+    const wall=this.mat('#0b1428',{roughness:.95}),floor=this.mat('#0a1121',{roughness:.6,metalness:.05}),rug=this.mat('#111d3a',{roughness:1});
+    const room=this.mesh(new THREE.BoxGeometry(70,26,70),new THREE.MeshStandardMaterial({color:'#0b1428',roughness:1,side:THREE.BackSide}),[0,13,0],null,g);room.receiveShadow=false;
+    const ground=this.mesh(new THREE.PlaneGeometry(70,70),floor,[0,0,0],null,g);ground.rotation.x=-Math.PI/2;
+    const mat=this.mesh(new THREE.CircleGeometry(12.5,48),rug,[0,.012,0],null,g);mat.rotation.x=-Math.PI/2;
+    const blue=new THREE.MeshBasicMaterial({color:'#3a74ff'}),red=new THREE.MeshBasicMaterial({color:'#ff2d46'});
+    for(const [m,y,x] of [[blue,7.2,-7],[red,7.2,7],[blue,3.1,-10],[red,3.1,10]])this.box(m,[x,y,-30],[16,.12,.12],g);
+    for(const [m,x] of [[blue,-30],[red,30]])for(const z of [-18,-6,6])this.box(m,[x,5.5,z],[.12,7,.12],g);
+    this.box(wall,[0,1.2,-29.6],[60,2.4,.4],g);
+    g.visible=false;
+  }
+  setEnvironment(name) {
+    const club=name==='club';this.club.visible=club;this.outdoor.visible=!club;
+    this.courtyard.visible=name==='courtyard';this.ocean.visible=name==='terrace';this.fortGroup.visible=name==='terrace';
+    this.scene.background=club?new THREE.Color('#070d1b'):null;this.scene.fog.color.set(club?'#070d1b':'#b5958d');this.scene.fog.density=club?.016:.006;
+    this.lighting.setMood(club?'club':'outdoor');
+  }
   lantern(x,y,z,s=1) {
     const g=new THREE.Group();g.position.set(x,y,z);g.scale.setScalar(s);this.scene.add(g);
     this.box(this.darkWood,[0,0,0],[.36,.55,.35],g);this.box(new THREE.MeshBasicMaterial({color:'#ffbf63'}),[0,0,.185],[.25,.4,.015],g);
@@ -133,8 +158,8 @@ export class PatioScene {
     }
   }
   update(state) {
-    const previous=this.state;this.state=state;this.layoutData=layoutChain(state.chain);
-    this.setEnvironment(state.settings?.environment??'courtyard');
+    const previous=this.state;this.state=state;this.layoutData=layoutChain(state.chain,this.orientation);
+    this.setEnvironment(state.settings?.environment??'club');
     const visible=new Set(),oldKeys=new Set((previous?.chain??[]).map(t=>`${Math.min(t.left,t.right)}:${Math.max(t.left,t.right)}`));
     let played=false;this.motion=[];
     state.chain.forEach((t,i)=>{
@@ -151,7 +176,7 @@ export class PatioScene {
       this.motion.push({node,from,target,fromAngle:fresh?p.angle:node.rotation.y,angle:p.angle,start:this.time,duration,fresh});
     });
     for(const [key,node] of this.tileNodes)if(!visible.has(key))node.visible=false;
-    this.table.setCounts(state.counts);
+    for(const table of Object.values(this.tables))table.setCounts(state.counts);
     this.view.setChainBounds(this.chainBounds());
     if(played){this.isPlacing=true;this.placingUntil=this.time+(this.reducedMotion?.1:.54);}
     this.renderer.shadowMap.needsUpdate=true;this.preview(state,null,[],null);
@@ -206,7 +231,14 @@ export class PatioScene {
     if(this.profile.shadows&&(this.dragActive||this.time<this.motionUntil+.05))this.renderer.shadowMap.needsUpdate=true;
     this.renderer.render(this.scene,this.camera);this.onFrame?.();
   }
-  resize(){this.renderer.setSize(innerWidth,innerHeight);this.view.resize();this.onFrame?.();}
+  resize(){this.renderer.setSize(innerWidth,innerHeight);this.view.resize();this.applyOrientation(innerHeight>innerWidth?'portrait':'landscape');this.onFrame?.();}
+  // Presentation only: same snapshot, same tiles and turn; the chain glides to its new layout.
+  applyOrientation(name) {
+    if(name===this.orientation)return;this.orientation=name;
+    for(const [key,table] of Object.entries(this.tables))table.group.visible=key===name;
+    this.table=this.tables[name];this.view.setTable(this.table.layout);this.renderer.shadowMap.needsUpdate=true;
+    if(this.state){this.update(this.state);this.onLayout?.();}
+  }
   quality(value) {
     const profile=qualityProfile(value,devicePixelRatio,this.renderer.capabilities.getMaxAnisotropy());this.profile=profile;this.qualityLevel=profile.name;
     this.renderer.setPixelRatio(profile.pixelRatio);this.lighting.applyQuality(profile);this.surfaces.setAnisotropy(profile.anisotropy);
@@ -215,15 +247,15 @@ export class PatioScene {
   metrics() {
     const sorted=[...this.performanceSamples].sort((a,b)=>a-b),mean=sorted.reduce((a,b)=>a+b,0)/Math.max(1,sorted.length);
     // Face paint (pips and centre line) inside the racks would reveal a hidden hand; it must stay 0.
-    let faces=0;this.table.group.traverse(o=>{if(o.userData.face)faces++;});
-    return {samples:sorted.length,meanFrameMs:mean,p95FrameMs:sorted[Math.floor(sorted.length*.95)]??0,approxFps:1000/mean,drawCalls:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,viewport:[innerWidth,innerHeight],quality:this.qualityLevel,pixelRatio:this.renderer.getPixelRatio(),shadows:this.renderer.shadowMap.enabled,
+    let faces=0;for(const table of Object.values(this.tables))table.group.traverse(o=>{if(o.userData.face)faces++;});
+    return {samples:sorted.length,meanFrameMs:mean,p95FrameMs:sorted[Math.floor(sorted.length*.95)]??0,approxFps:1000/mean,drawCalls:this.renderer.info.render.calls,triangles:this.renderer.info.render.triangles,geometries:this.renderer.info.memory.geometries,textures:this.renderer.info.memory.textures,viewport:[innerWidth,innerHeight],orientation:this.orientation,quality:this.qualityLevel,pixelRatio:this.renderer.getPixelRatio(),shadows:this.renderer.shadowMap.enabled,
       camera:{yaw:this.view.yaw,tilt:this.view.tilt,zoom:this.view.zoom,inspecting:this.view.inspecting,position:this.camera.position.toArray()},opponentFaces:faces,pooledTiles:this.tileNodes.size};
   }
   dispose() {
     this.renderer.setAnimationLoop(null);window.removeEventListener('resize',this.resizeHandler);
-    this.table.dispose();this.tiles.dispose();this.lighting.dispose();
+    for(const table of Object.values(this.tables))table.dispose();this.tiles.dispose();this.lighting.dispose();
     const {coated,...tableMaterials}=this.tableMaterials;disposeMaterials(Object.values(tableMaterials));this.surfaces.dispose();
-    const geometries=new Set([this.unitBox,this.sphere]),materials=new Set(),textures=new Set(),skip=new Set([this.table.group,this.dynamic]);
+    const geometries=new Set([this.unitBox,this.sphere]),materials=new Set(),textures=new Set(),skip=new Set([...Object.values(this.tables).map(t=>t.group),this.dynamic]);
     const walk=o=>{if(skip.has(o))return;if(o.geometry)geometries.add(o.geometry);for(const m of Array.isArray(o.material)?o.material:o.material?[o.material]:[])materials.add(m);o.children.forEach(walk);};walk(this.scene);
     for(const m of materials)for(const value of Object.values(m))if(value?.isTexture)textures.add(value);
     for(const g of geometries)g.dispose();for(const m of materials)m.dispose();for(const tex of textures)tex.dispose();this.renderer.dispose();

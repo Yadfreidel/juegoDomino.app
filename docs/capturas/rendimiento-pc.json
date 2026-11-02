@@ -1,16 +1,17 @@
 {
-  "samples": 11,
-  "meanFrameMs": 527.2518181818182,
-  "p95FrameMs": 2583.1000000000004,
-  "approxFps": 1.8966269352060512,
-  "drawCalls": 103,
-  "triangles": 67598,
-  "geometries": 64,
-  "textures": 18,
+  "samples": 4,
+  "meanFrameMs": 995.7800000000001,
+  "p95FrameMs": 2299.9500000000003,
+  "approxFps": 1.004237883869931,
+  "drawCalls": 78,
+  "triangles": 62812,
+  "geometries": 40,
+  "textures": 19,
   "viewport": [
     1440,
     900
   ],
+  "orientation": "landscape",
   "quality": "medium",
   "pixelRatio": 1,
   "shadows": true,
@@ -21,8 +22,8 @@
     "inspecting": false,
     "position": [
       0,
-      17.865578963858926,
-      10.07198595013241
+      17.252836057726086,
+      7.114534650884446
     ]
   },
   "opponentFaces": 0,

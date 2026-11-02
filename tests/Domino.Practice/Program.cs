@@ -8,7 +8,8 @@ JsonElement View(PracticeMatch m)=>JsonSerializer.SerializeToElement(m.Snapshot(
 var clock=new FakeClock();var shuffle=new FixedShuffle();var match=new PracticeMatch(shuffle,clock);
 Check(View(match).GetProperty("hand").GetArrayLength()==0&&shuffle.Calls==0,"No reparte antes de aceptar");
 Check(match.Configure(new PracticeSettings{Target=125})!=null,"Rechaza meta inválida");
-Check(match.Configure(new PracticeSettings{Environment="club"})!=null,"Rechaza escenario inexistente");
+Check(match.Configure(new PracticeSettings{Environment="estadio"})!=null,"Rechaza escenario inexistente");
+Check(new PracticeSettings().Environment=="club"&&new PracticeSettings().Validate()==null,"Club de dominó es el escenario predeterminado y válido");
 Check(match.Configure(new PracticeSettings{TurnSeconds=10})!=null,"Rechaza reloj inválido");
 Check(match.Configure(new PracticeSettings{Difficulty="cheat"})!=null,"Rechaza bot desconocido");
 Check(match.Configure(new PracticeSettings{Target=100,TurnSeconds=15,Difficulty="hard",Bonus=0})==null,"Configura práctica");

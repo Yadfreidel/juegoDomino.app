@@ -13,7 +13,7 @@ export const TILE_PIXELS_MIN=88;
 // so rival racks are seen from behind (reverse faces only) at every allowed angle.
 export class TableCamera {
   constructor(camera,canvas,{outline=[[-6,-4],[6,-4],[6,4],[-6,4]],playArea=null,surfaceY=2.09,topY=2.42,felt={x:5.4,z:3.3}}={}) {
-    Object.assign(this,{camera,canvas,outline,surfaceY,topY,felt});this.playArea=playArea??outline.map(([x,z])=>[x,z,topY]);
+    Object.assign(this,{camera,canvas,outline,surfaceY,topY,felt});this.playArea=playArea??outline.map(([x,z])=>[x,z,topY]);this.steepest=FRAMING.steepest;
     this.yaw=0;this.tilt=0;this.zoom=1;this.inspecting=false;this.sensitivity=1;this.invertY=false;this.reducedMotion=false;
     this.insets={top:0,bottom:0,left:0,right:0};this.getInsets=()=>this.insets;
     this.pan=new THREE.Vector3();this.chainBox={minX:-1,maxX:1,minZ:-.6,maxZ:.6};this.distance=20;
@@ -40,6 +40,8 @@ export class TableCamera {
   reset(){this.yaw=0;this.tilt=0;this.zoom=1;this.inspecting=false;this.pan.set(0,0,0);this.dirty=true;}
   setInspecting(value){this.inspecting=value;this.pan.set(0,0,0);this.zoom=1;this.dirty=true;}
   setChainBounds(box){this.chainBox=box;if(this.inspecting)this.dirty=true;}
+  // Another table shape (orientation change): only the framing changes, never the seats.
+  setTable({outline,playArea,feltHalf,steepest}){Object.assign(this,{outline,playArea,felt:feltHalf,steepest:deg(steepest)});this.pan.set(0,0,0);this.dirty=true;}
   bindControls({onTap}) {
     const pointers=new Map();let lastX=0,lastY=0,pinch=0,moved=false;
     const camerasButton=e=>e.pointerType!=='mouse'||e.button===2||(this.inspecting&&e.button===0);
@@ -90,7 +92,7 @@ export class TableCamera {
   overview() {
     this.points=this.outlinePoints();
     const target=new THREE.Vector3(0,this.surfaceY,0),area=this.usable();let best=null;
-    for(let pitch=FRAMING.steepest;pitch>=FRAMING.flattest-1e-6;pitch-=deg(2)) {
+    for(let pitch=this.steepest;pitch>=FRAMING.flattest-1e-6;pitch-=deg(2)) {
       const distance=this.fitDistance(pitch,target,FRAMING.widthShare),share=this.measure(this.pose(pitch,0,distance,target),target).width/(area.right-area.left);
       if(!best||share>best.share+.005)best={pitch,distance,share};
       if(share>=FRAMING.widthShare-.015)break;

@@ -1,0 +1,161 @@
+/* Game HUD over the 3D table. Portrait and landscape are separate compositions; the table itself is framed
+   by the camera inside the space these overlays leave free (frameInsets in app.js). */
+#scene{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none}
+.vignette{position:fixed;inset:0;pointer-events:none;background:radial-gradient(ellipse at 50% 45%,transparent 55%,#030712aa 100%)}
+
+/* Top: compact score pill, sound and settings. */
+.hud-top{position:fixed;top:calc(var(--s-2) + var(--safe-top));left:max(var(--s-3),var(--safe-left));right:max(var(--s-3),var(--safe-right));display:flex;align-items:center;justify-content:center;gap:var(--s-2);pointer-events:none;z-index:5}
+.hud-top>*{pointer-events:auto}
+.scoreboard{display:flex;align-items:center;gap:var(--s-3);min-height:40px;padding:0 var(--s-4);border-radius:var(--r-pill);background:linear-gradient(90deg,#0c1d4a,#0a1429 50%,#2a0b18);box-shadow:inset 0 0 0 1px #3f78ff80,0 0 0 1px #d91f3540,0 6px 18px #0007;position:relative}
+.scoreboard .team{display:flex;align-items:baseline;gap:6px}
+.scoreboard small{font-size:var(--fs-sm);font-weight:600;color:var(--text-2)}
+.scoreboard strong{font:italic 900 24px/1 var(--font-display);font-variant-numeric:tabular-nums}
+.scoreboard .us strong{color:#8fb4ff}.scoreboard .them strong{color:#ff8a97}
+.score-dot{width:5px;height:5px;border-radius:50%;background:var(--text-2)}
+.scoreboard .target{position:absolute;left:50%;top:100%;transform:translate(-50%,-4px);padding:2px 8px;border-radius:var(--r-pill);background:#0b1426;box-shadow:inset 0 0 0 1px var(--line-strong);font-size:9px;letter-spacing:1px;color:var(--text-2);white-space:nowrap}
+.hud-tools{position:absolute;right:0;display:flex;gap:var(--s-2)}
+.hud-tools .icon-btn{width:40px;height:40px}
+
+/* Player labels, positioned on the frame by the scene. Turn is shown by icon + text, not colour alone. */
+.player{position:fixed;left:0;top:0;z-index:4;display:flex;align-items:center;gap:6px;padding:4px 10px;border-radius:var(--r-pill);background:#0a1429e8;box-shadow:inset 0 0 0 1px var(--line-strong),0 4px 12px #0007;white-space:nowrap;pointer-events:none;transition:box-shadow var(--t-med)}
+.player>div{display:flex;align-items:baseline;gap:6px}
+.player strong{font-size:var(--fs-sm);font-weight:700}
+.player strong em{font-style:normal;font-size:10px;color:var(--text-3);margin-left:2px}
+.player small{font-size:var(--fs-xs);color:var(--text-2)}
+.player .bot-tag{display:none}
+.player .turn-mark{display:none;color:var(--cyan)}
+.player .turn-mark .icon{width:12px;height:12px}
+.player.active{box-shadow:var(--edge-cyan)}
+.player.active .turn-mark{display:inline-flex}
+.player-me strong{color:var(--cyan)}
+.mute-toggle{pointer-events:auto;width:26px;height:26px;padding:0;border:0;border-radius:50%;background:#16243f;font-size:11px;line-height:1;box-shadow:inset 0 0 0 1px var(--line-strong)}
+.mute-toggle[aria-pressed=true]{opacity:.55}
+.chat-bubble{position:absolute;left:50%;bottom:calc(100% + 8px);transform:translateX(-50%) translateY(4px);padding:6px 11px;border-radius:14px 14px 14px 4px;background:var(--ivory);color:#0b1426;font-size:var(--fs-sm);font-weight:700;box-shadow:0 6px 18px #0006;opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+.chat-bubble.visible{opacity:1;transform:translateX(-50%)}
+
+/* Camera: inspect the chain and come back; zoom only with a fine pointer. */
+.camera-controls{position:fixed;z-index:5;display:flex;gap:6px}
+.camera-controls .icon-btn{width:38px;height:38px}
+.camera-controls #camera-table{width:auto;padding:0 12px;border-radius:var(--r-pill);display:inline-flex;gap:6px;font-size:var(--fs-sm);font-weight:700}
+@media (pointer:coarse){#camera-in,#camera-out{display:none}}
+
+/* Turn and real countdown, near my hand. */
+.turn-status{display:flex;justify-content:center;gap:var(--s-2);margin-bottom:var(--s-2)}
+.turn-pill{color:var(--text-2)}
+.turn-pill .icon{width:14px;height:14px;display:none}
+.turn-pill.mine{color:#e9fbff;background:#06202acc;box-shadow:var(--edge-cyan)}
+.turn-pill.mine .icon{display:block;color:var(--cyan)}
+.timer-pill{font-variant-numeric:tabular-nums;color:var(--text)}
+.timer-pill.low{color:#fff;box-shadow:var(--edge-red)}
+
+/* My rack: dark varnished wood holding large ivory tiles. */
+/* Centred with margins, not a transform: a transform would trap the fixed-position turn pills inside it. */
+.play-area{position:fixed;left:0;right:0;margin:0 auto;bottom:calc(var(--s-2) + var(--safe-bottom));z-index:5;width:min(720px,calc(100vw - 16px - var(--safe-left) - var(--safe-right)));display:flex;flex-direction:column;align-items:center}
+.hand-wrap{position:relative;max-width:100%}
+.hand{display:flex;align-items:flex-end;justify-content:center;gap:6px;min-height:96px;padding:10px 12px 12px;border-radius:14px 14px 10px 10px;background:linear-gradient(180deg,#3a170d,#5b2614 30%,#45190d);box-shadow:inset 0 0 0 2px #7a3a1f,inset 0 6px 14px #0009,0 0 0 1px #0008,0 12px 26px #000a}
+.rack-front{position:absolute;left:-8px;right:-8px;bottom:-8px;height:14px;border-radius:4px 4px 10px 10px;background:linear-gradient(180deg,#8a4524,#4a1c0e 55%,#2a0e06);box-shadow:0 6px 14px #0008;pointer-events:none}
+.rack-edge{display:none}
+.tile{position:relative;flex:none;width:52px;height:90px;padding:0;border:0;border-radius:7px;background:linear-gradient(160deg,#fbf6ea,#efe5cf 60%,#e0d3b6);box-shadow:inset 0 1px 0 #fff,inset 0 -3px 0 #c9b893,0 3px 0 #a48f69,0 6px 10px #0008;transition:transform var(--t-fast) var(--ease),box-shadow var(--t-med)}
+/* Larger hit area vertically; horizontally it stays inside half the gap so a neighbour is never hit. */
+.tile::before{content:'';position:absolute;inset:-12px -3px}
+.tile svg{display:block;width:100%;height:100%;pointer-events:none}
+.tile.selected{transform:translateY(-12px);box-shadow:inset 0 1px 0 #fff,inset 0 -3px 0 #c9b893,0 0 0 3px var(--cyan),0 0 18px #49e5ff66,0 10px 14px #0009}
+.tile.playable::after{content:'';position:absolute;left:50%;bottom:-9px;width:8px;height:8px;margin-left:-4px;border-radius:50%;background:var(--cyan);box-shadow:0 0 6px var(--cyan)}
+.tile:disabled{cursor:default;filter:brightness(.9)}
+.tile:disabled.playable::after{display:none}
+.large-tiles .tile{width:58px;height:100px}
+.dragging-tile .tile.selected{opacity:.4}
+.action-bar{display:flex;align-items:center;gap:var(--s-2);width:100%;margin-top:var(--s-3)}
+.action-bar .icon-btn{width:36px;height:36px}
+#message{flex:1;margin:0;text-align:center;font-size:var(--fs-xs);line-height:1.35;color:var(--text-2);min-height:2.7em;display:flex;align-items:center;justify-content:center}
+
+/* Placement: cyan destinations on the table, choose end, confirm or cancel. */
+.end-marker{position:fixed;z-index:4;transform:translate(-50%,-50%);width:76px;height:64px;padding:0;border:2px dashed #49e5ffcc;border-radius:14px;background:#49e5ff14;color:var(--cyan);box-shadow:0 0 16px #49e5ff33}
+.end-marker span{position:absolute;top:calc(100% + 4px);left:50%;transform:translateX(-50%);padding:2px 8px;border-radius:var(--r-pill);background:#06202af0;font-size:10px;font-weight:700;white-space:nowrap}
+.end-marker.selected,.end-marker:hover{border-style:solid;background:#49e5ff2a}
+.end-marker.offscreen{border-style:solid;background:#06202ae6}
+.end-marker.offscreen::before{content:attr(data-direction);position:absolute;inset:0;display:grid;place-items:center;font-size:24px}
+.dragging-tile .end-marker{pointer-events:none}
+.placement-tools{position:absolute;right:0;bottom:calc(100% + var(--s-2));display:flex;align-items:center;gap:var(--s-2);padding:4px 6px;border-radius:var(--r-md);background:#0a1429f2;box-shadow:inset 0 0 0 1px var(--line-strong);z-index:6}
+.placement-tools details{position:relative;font-size:var(--fs-xs)}
+.placement-tools summary{min-height:34px;display:flex;align-items:center;padding:0 8px;list-style:none;color:var(--text-2)}
+.placement-tools details>div{position:absolute;right:0;bottom:calc(100% + 8px);display:flex;gap:6px;padding:8px;border-radius:var(--r-md);background:var(--surface);box-shadow:var(--edge-blue)}
+.end-choice{min-height:44px;padding:0 12px;border:0;border-radius:var(--r-sm);background:#173470;font-size:var(--fs-sm);font-weight:700;white-space:nowrap}
+.end-choice:disabled{opacity:.4}
+#cancel{display:inline-flex;align-items:center;gap:4px;min-height:34px;padding:0 10px;border:0;border-radius:var(--r-sm);background:none;color:var(--text-2);font-size:var(--fs-xs);font-weight:700}
+.confirmation{position:absolute;left:50%;bottom:calc(100% + var(--s-2));transform:translateX(-50%);display:flex;align-items:center;gap:var(--s-2);padding:var(--s-2) var(--s-3);border-radius:var(--r-md);background:#0a1429fa;box-shadow:var(--edge-cyan);z-index:7;white-space:nowrap}
+.confirmation>span{font-size:var(--fs-sm);font-weight:600}
+.confirmation .primary{min-height:40px;padding:0 var(--s-4);font-size:var(--fs-sm)}
+body:has(dialog[open]) #end-markers{visibility:hidden}
+
+/* Quick messages fold behind a chat button so they never cover the table; fullscreen and loading. */
+.quick-reactions{position:fixed;z-index:6;display:none;flex-direction:column;align-items:flex-start;gap:6px;padding:8px;border-radius:var(--r-md);background:#0a1429f2;box-shadow:var(--edge-blue)}
+body.chat-open .quick-reactions:not([hidden]){display:flex}
+.quick-reactions button{min-height:32px;padding:0 10px;border:0;border-radius:var(--r-pill);background:#0a1429e0;box-shadow:inset 0 0 0 1px var(--line-strong);font-size:var(--fs-xs);font-weight:600;color:var(--text-2)}
+.quick-reactions output.visible{padding:5px 10px;border-radius:12px;background:var(--ivory);color:#0b1426;font-size:var(--fs-xs);font-weight:700}
+.hud-bottom{position:fixed;z-index:5}
+.hud-bottom .icon-btn{width:36px;height:36px}
+.scene-loading{position:fixed;inset:0;z-index:20;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s-3);background:var(--bg);color:var(--text-2);font-weight:600}
+
+/* ---------- Portrait phone: score on top, table full width, my rack and turn at the bottom. ---------- */
+@media (orientation:portrait){
+  .camera-controls{top:calc(var(--s-2) + var(--safe-top));left:max(var(--s-3),var(--safe-left))}
+  .camera-controls #camera-table span{display:none}
+  .camera-controls #camera-table{width:38px;padding:0}
+  .camera-controls #camera-reset,.camera-controls #camera-in,.camera-controls #camera-out{display:none}
+  .camera-controls #camera-table[aria-pressed=true]~#camera-reset{display:inline-grid}
+  .camera-controls{flex-direction:row}
+  .hud-top{justify-content:center}
+  .hud-tools{gap:6px}.hud-tools .icon-btn{width:38px;height:38px}
+  .scoreboard{gap:var(--s-2);padding:0 var(--s-3)}
+  .scoreboard strong{font-size:22px}
+  .hud-bottom{left:max(var(--s-3),var(--safe-left));bottom:calc(150px + var(--safe-bottom));display:none}
+  .quick-reactions{left:max(var(--s-3),var(--safe-left));bottom:calc(64px + var(--safe-bottom))}
+  .player{padding:3px 8px}.player .mute-toggle{width:22px;height:22px;font-size:9px}.player strong{font-size:12px}
+  .tile{width:clamp(40px,11.4vw,54px);height:clamp(70px,20vw,94px)}
+  .large-tiles .tile{width:clamp(42px,12vw,58px);height:clamp(74px,21vw,100px)}
+  .hand{gap:5px;padding:9px 9px 11px;min-height:0}
+}
+@media (orientation:portrait) and (max-width:370px){.scoreboard small{font-size:11px}.hud-tools #sound{display:none}}
+
+/* ---------- Landscape phone and desktop: score left, turn + time + tools right, rack bottom centre. ---------- */
+@media (orientation:landscape){
+  .hud-top{justify-content:flex-start}
+  .hud-tools{right:0}
+  .play-area{width:fit-content;max-width:calc(100vw - 260px)}
+  .turn-status{position:fixed;top:calc(var(--s-2) + var(--safe-top));right:calc(max(var(--s-3),var(--safe-right)) + 92px);margin:0;z-index:6}
+  .action-bar{position:absolute;left:100%;bottom:4px;width:auto;margin:0 0 0 var(--s-3);flex-direction:column}
+  /* Top centre, between the score and the turn pills: at most two short lines, never over a label. */
+  .action-bar #message{position:fixed;left:0;right:0;margin:0 auto;top:calc(var(--s-2) + var(--safe-top));width:max-content;max-width:clamp(180px,calc(100vw - 600px),520px);min-height:0;padding:5px 12px;border-radius:var(--r-md);background:#0a1429d9;box-shadow:inset 0 0 0 1px var(--line);font-size:11px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;pointer-events:none;z-index:4}
+  .action-bar #message:empty{display:none}
+  .camera-controls{right:max(var(--s-3),var(--safe-right));bottom:calc(var(--s-3) + var(--safe-bottom));flex-direction:row}
+  .hud-bottom{left:max(var(--s-3),var(--safe-left));bottom:calc(var(--s-3) + var(--safe-bottom))}
+  .quick-reactions{left:max(var(--s-3),var(--safe-left));bottom:calc(60px + var(--safe-bottom))}
+  .placement-tools{right:100%;left:auto;bottom:0;margin-right:var(--s-3);flex-direction:column;align-items:stretch}
+}
+@media (orientation:landscape) and (max-height:520px){
+  .hud-top{top:calc(6px + var(--safe-top))}
+  .scoreboard{min-height:34px}.scoreboard strong{font-size:20px}.scoreboard small{font-size:12px}
+  .scoreboard .target{display:none}
+  .turn-status{top:calc(6px + var(--safe-top))}
+  .pill{min-height:34px;padding:0 12px;font-size:var(--fs-sm)}
+  .hud-tools .icon-btn{width:34px;height:34px}.hud-tools .icon-btn .icon{width:17px;height:17px}
+  .camera-controls #camera-table span{display:none}
+  .camera-controls #camera-table{width:38px;padding:0}
+  .camera-controls{flex-direction:column;bottom:calc(8px + var(--safe-bottom))}
+  .play-area{bottom:calc(2px + var(--safe-bottom))}
+  .hand{min-height:0;padding:6px 10px 8px;gap:6px}
+  .tile{width:clamp(36px,5.2vw,46px);height:clamp(63px,9.1vw,80px)}
+  .large-tiles .tile{width:clamp(40px,5.8vw,50px);height:clamp(70px,10.1vw,88px)}
+  .tile.selected{transform:translateY(-8px)}
+  .rack-front{height:10px;bottom:-6px}
+  .quick-reactions{bottom:calc(52px + var(--safe-bottom))}
+  .quick-reactions button{min-height:28px}
+  .action-bar .icon-btn{width:32px;height:32px}
+}
+@media (orientation:landscape) and (min-height:700px){
+  .action-bar #message{font-size:var(--fs-sm)}
+  .tile{width:64px;height:110px}.large-tiles .tile{width:70px;height:120px}
+  .hand{gap:9px;padding:12px 16px 14px}
+  .scoreboard{min-height:46px}.scoreboard strong{font-size:28px}
+}

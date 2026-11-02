@@ -16,7 +16,7 @@ export class TableLighting {
 
     this.group=new THREE.Group();scene.add(this.group);
     // Warm sky above, terracotta bounce from the floor.
-    this.group.add(new THREE.HemisphereLight('#ffe9cc','#5a3a26',.85));
+    this.hemisphere=new THREE.HemisphereLight('#ffe9cc','#5a3a26',.85);this.group.add(this.hemisphere);
     // Late-afternoon sun from the sea side, high enough to keep tile shadows short and readable.
     const key=new THREE.DirectionalLight('#ffd7a6',3);key.position.set(-6.5,15,-7);key.castShadow=true;
     Object.assign(key.shadow.camera,{left:-8.5,right:8.5,top:8.5,bottom:-8.5,near:4,far:36});key.shadow.bias=-.0004;key.shadow.normalBias=.018;key.shadow.radius=3;
@@ -24,8 +24,16 @@ export class TableLighting {
     key.shadow.intensity=.72;
     this.group.add(key,key.target);key.target.position.set(0,2,0);this.key=key;
     // Soft fill from the player's side so faces toward the camera never go muddy.
-    const fill=new THREE.DirectionalLight('#fff0dc',.9);fill.position.set(1.5,10,12);this.group.add(fill);
-    for(const x of [-11.2,11.2]){const lantern=new THREE.PointLight('#ffb35c',5,16,2);lantern.position.set(x,6,-4);this.group.add(lantern);}
+    const fill=new THREE.DirectionalLight('#fff0dc',.9);fill.position.set(1.5,10,12);this.group.add(fill);this.fill=fill;
+    this.lanterns=[-11.2,11.2].map(x=>{const lantern=new THREE.PointLight('#ffb35c',5,16,2);lantern.position.set(x,6,-4);this.group.add(lantern);return lantern;});
+  }
+  // Club: a neutral overhead key over a dark room with a faint blue bounce. Outdoor: warm late-afternoon sun.
+  setMood(name) {
+    if(name===this.mood)return;this.mood=name;const club=name==='club';
+    this.key.color.set(club?'#fff3e2':'#ffd7a6');this.key.intensity=club?3.2:3;this.key.position.set(club?-3:-6.5,club?16:15,club?-4:-7);
+    this.hemisphere.color.set(club?'#c6d4ff':'#ffe9cc');this.hemisphere.groundColor.set(club?'#1a1424':'#5a3a26');this.hemisphere.intensity=club?.7:.85;
+    this.fill.color.set(club?'#dfe8ff':'#fff0dc');this.fill.intensity=club?1:.9;for(const l of this.lanterns)l.visible=!club;
+    this.renderer.shadowMap.needsUpdate=true;
   }
   reflect(materials,intensity=.55){this.reflective=materials.filter(m=>!m.isMeshBasicMaterial);for(const m of this.reflective){m.envMap=this.environment;m.envMapIntensity=intensity;m.needsUpdate=true;}}
   applyQuality(profile) {

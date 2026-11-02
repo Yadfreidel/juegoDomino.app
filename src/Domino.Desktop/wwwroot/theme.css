@@ -1,0 +1,103 @@
+/* Dominó Patio RD · visual theme. Every colour, font, size step, border and interaction state lives here;
+   screens.css and game.css only compose these tokens and components. */
+@font-face{font-family:'Exo 2';font-style:italic;font-weight:700 900;font-display:swap;src:url(assets/fonts/exo2-italic.woff2) format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:500;font-display:swap;src:url(assets/fonts/barlow-500.woff2) format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:600;font-display:swap;src:url(assets/fonts/barlow-600.woff2) format('woff2')}
+@font-face{font-family:'Barlow';font-style:normal;font-weight:700;font-display:swap;src:url(assets/fonts/barlow-700.woff2) format('woff2')}
+
+:root{
+  /* Night blue base with the flag's blue and red as accents; cyan marks turn and selection. */
+  --bg:#070d1b;--bg-raised:#0b1426;--surface:#101b30;--surface-2:#16243f;--surface-3:#1d2f52;
+  --line:#2a3d63;--line-strong:#3d5688;
+  --blue:#165dff;--blue-bright:#4c86ff;--blue-deep:#0b2f8a;--red:#d91f35;--red-bright:#ff3d52;--red-deep:#8e0f20;
+  --cyan:#49e5ff;--cyan-soft:#49e5ff2e;--gold:#d4ad66;--ivory:#f3ead6;
+  --text:#f5f4ef;--text-2:#aab6cc;--text-3:#7d8aa6;--danger:#ff6b7a;--ok:#5fe0a8;
+  --font-display:'Exo 2','Arial Narrow',sans-serif;--font-ui:'Barlow','Segoe UI',system-ui,sans-serif;
+  --fs-xs:11px;--fs-sm:13px;--fs-md:15px;--fs-lg:18px;--fs-xl:24px;--fs-2xl:34px;
+  --s-1:4px;--s-2:8px;--s-3:12px;--s-4:16px;--s-5:24px;--s-6:32px;
+  --r-sm:8px;--r-md:12px;--r-lg:18px;--r-pill:999px;
+  /* Discreet luminous borders: a 1px line plus a soft halo, never a pulsing glow. */
+  --edge-blue:0 0 0 1px #3f78ff99,0 0 16px #165dff40;--edge-red:0 0 0 1px #ff5a6c99,0 0 18px #d91f3555;
+  --edge-cyan:0 0 0 2px var(--cyan),0 0 18px #49e5ff55;--shadow:0 10px 30px #0008;
+  --t-fast:.14s;--t-med:.24s;--ease:cubic-bezier(.2,.8,.2,1);
+  --safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px);--safe-left:env(safe-area-inset-left,0px);--safe-right:env(safe-area-inset-right,0px);
+  color-scheme:dark;font-family:var(--font-ui);color:var(--text);font-size:var(--fs-md);
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;overflow:hidden;background:radial-gradient(ellipse at 50% 18%,#13244a 0,var(--bg) 62%) fixed,var(--bg);-webkit-font-smoothing:antialiased}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+:focus-visible{outline:3px solid var(--cyan);outline-offset:3px}
+.sr-only{position:absolute!important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.icon-sprite{position:absolute;width:0;height:0;overflow:hidden}
+.icon{width:1.15em;height:1.15em;flex:none;fill:currentColor}
+[hidden]{display:none!important}
+
+/* Buttons. .primary and .text-button are the legacy names used across the forms and dialogs. */
+.btn,.primary,.text-button,.back-button{display:inline-flex;align-items:center;justify-content:center;gap:var(--s-2);border:0;border-radius:var(--r-md);font-weight:700;letter-spacing:.2px;transition:transform var(--t-fast) var(--ease),filter var(--t-fast),box-shadow var(--t-med)}
+.btn:active:not(:disabled),.primary:active:not(:disabled),.icon-btn:active:not(:disabled),.text-button:active:not(:disabled){transform:scale(.97)}
+.btn:disabled,.primary:disabled,.icon-btn:disabled,.text-button:disabled{opacity:.42;cursor:not-allowed;filter:saturate(.4)}
+.btn-primary,.primary{min-height:48px;padding:0 var(--s-5);background:linear-gradient(180deg,#f0394d,var(--red) 48%,#b0162a);color:#fff;box-shadow:inset 0 1px 0 #ffffff40,inset 0 -2px 0 #0004,var(--edge-red)}
+.btn-secondary{min-height:48px;padding:0 var(--s-5);background:linear-gradient(180deg,#173470,#0f2453);color:var(--text);box-shadow:inset 0 1px 0 #ffffff1c,var(--edge-blue)}
+.btn-primary:hover:not(:disabled),.primary:hover:not(:disabled),.btn-secondary:hover:not(:disabled){filter:brightness(1.12)}
+.btn-xl{width:100%;min-height:58px;justify-content:flex-start;padding:0 var(--s-5);font:italic 800 var(--fs-lg)/1 var(--font-display);text-transform:none;letter-spacing:.3px}
+.btn-xl .icon{width:26px;height:26px}
+.btn-xl span{display:flex;flex-direction:column;align-items:flex-start;gap:3px;text-align:left}
+.btn-xl small{font:600 var(--fs-xs)/1.1 var(--font-ui);font-style:normal;opacity:.78;letter-spacing:.2px}
+.text-button,.back-button{min-height:40px;padding:0 var(--s-3);background:none;color:var(--text-2);font-weight:600}
+.text-button:hover,.back-button:hover{color:var(--text)}
+.primary span{font-size:1.1em}
+.icon-btn{display:inline-grid;place-items:center;width:42px;height:42px;padding:0;border:0;border-radius:50%;background:#0f1a31e6;color:var(--text);box-shadow:inset 0 0 0 1px var(--line-strong);transition:transform var(--t-fast),box-shadow var(--t-med),background var(--t-med)}
+.icon-btn .icon{width:20px;height:20px}
+.icon-btn:hover:not(:disabled){box-shadow:var(--edge-blue)}
+/* Toggles stay blue; cyan is reserved for the turn and for what is selected on the table. */
+.icon-btn[aria-pressed=true]{background:#173470;box-shadow:var(--edge-blue)}
+#camera-table[aria-pressed=true]{background:var(--cyan);color:#04131c;box-shadow:var(--edge-cyan)}
+.icon-btn.labeled{width:auto;height:auto;padding:var(--s-2) var(--s-3);border-radius:var(--r-md);display:inline-flex;flex-direction:column;gap:4px;font-size:var(--fs-xs);font-weight:600;color:var(--text-2)}
+
+/* Pills, cards, fields. */
+.pill{display:inline-flex;align-items:center;gap:6px;min-height:36px;padding:0 var(--s-4);border-radius:var(--r-pill);background:#0c1730ee;box-shadow:inset 0 0 0 1px var(--line-strong);font-weight:700;font-size:var(--fs-md);white-space:nowrap}
+.card,.nav-panel,.modal{background:linear-gradient(180deg,#13213dfa,#0c1529fa);border-radius:var(--r-lg);box-shadow:0 0 0 1px var(--line),0 0 26px #165dff1f,var(--shadow)}
+.eyebrow{display:block;font:italic 800 var(--fs-xs)/1 var(--font-display);letter-spacing:1.6px;text-transform:uppercase;color:var(--cyan)}
+h1,h2{font-family:var(--font-display);font-style:italic;font-weight:800;letter-spacing:.2px;margin:var(--s-3) 0}
+h2{font-size:var(--fs-2xl);line-height:1.05}
+.form-field{display:flex;flex-direction:column;gap:6px;margin:var(--s-3) 0;font-size:var(--fs-sm);font-weight:600;color:var(--text-2)}
+.form-field input,.form-field select,.setting-row select{min-height:46px;padding:0 var(--s-3);border:0;border-radius:var(--r-sm);background:#091327;color:var(--text);box-shadow:inset 0 0 0 1px var(--line-strong);font-size:var(--fs-md);font-weight:600}
+.form-field input:focus,.form-field select:focus{outline:none;box-shadow:inset 0 0 0 2px var(--cyan)}
+.form-field input::placeholder{color:var(--text-3)}
+.setting-row{display:flex;justify-content:space-between;align-items:center;gap:var(--s-3);min-height:48px;padding:var(--s-2) 0;border-bottom:1px solid #2a3d6380;font-size:var(--fs-sm);font-weight:600}
+input[type=checkbox]{appearance:none;flex:none;width:44px;height:26px;margin:0;border-radius:var(--r-pill);background:#24365c;position:relative;cursor:pointer;transition:background var(--t-med)}
+input[type=checkbox]::after{content:'';position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#dfe6f5;transition:transform var(--t-med) var(--ease)}
+input[type=checkbox]:checked{background:var(--blue)}
+input[type=checkbox]:checked::after{transform:translateX(18px)}
+input[type=radio]{accent-color:var(--cyan);width:18px;height:18px}
+input[type=range]{accent-color:var(--cyan);width:min(48%,200px)}
+.field-note{font-size:var(--fs-xs);line-height:1.55;color:var(--text-3);margin:var(--s-2) 0}
+.form-error{min-height:1em;color:var(--danger);font-size:var(--fs-sm);font-weight:600}
+fieldset{border:0;margin:var(--s-4) 0 0;padding:0}
+legend{font:italic 800 var(--fs-sm)/1 var(--font-display);letter-spacing:1px;text-transform:uppercase;color:var(--text);margin-bottom:var(--s-2)}
+details summary{cursor:pointer;font-weight:700}
+
+/* Notices and states: loading, offline, error, empty and waiting share one look. */
+.notice,.notice-changed,.connection-status{padding:var(--s-3) var(--s-4);border-radius:var(--r-md);background:#0d1830f2;box-shadow:inset 0 0 0 1px var(--line-strong);font-size:var(--fs-sm);line-height:1.45}
+.notice-changed{box-shadow:inset 0 0 0 1px #49e5ff88;color:var(--text)}
+.connection-status{position:fixed;left:50%;top:calc(var(--s-3) + var(--safe-top));transform:translateX(-50%);z-index:30;max-width:min(92vw,520px);box-shadow:var(--edge-red);color:var(--text)}
+.connection-status::before{content:'Sin conexión · ';font-weight:700;color:var(--red-bright)}
+.empty-state{padding:var(--s-4);border-radius:var(--r-md);border:1px dashed var(--line-strong);color:var(--text-2);text-align:center;font-size:var(--fs-sm)}
+.spinner{width:22px;height:22px;border-radius:50%;border:3px solid #ffffff26;border-top-color:var(--cyan);animation:spin .9s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* Dialogs. */
+.modal{border:0;padding:var(--s-6) var(--s-5) var(--s-5);color:var(--text);width:min(480px,92vw);max-height:min(88dvh,760px);overflow:auto}
+.modal::backdrop{background:#030712b8;backdrop-filter:blur(3px)}
+.modal[open]{animation:rise var(--t-med) var(--ease)}
+.modal .primary{width:100%;margin-top:var(--s-4)}
+.modal>p,.modal li{color:var(--text-2);font-size:var(--fs-sm);line-height:1.6}
+@keyframes rise{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:none}}
+
+/* Tricolour accent line, used as a separator under titles and at panel edges. */
+.tricolor{height:4px;border-radius:2px;background:linear-gradient(90deg,var(--blue) 0 42%,#f5f4ef 42% 58%,var(--red) 58%)}
+
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}}
+body.reduced-motion *,body.reduced-motion *::before,body.reduced-motion *::after{animation-duration:.001s!important;animation-iteration-count:1!important;transition-duration:.001s!important}

@@ -1,6 +1,6 @@
 import * as THREE from './vendor/three.module.js';
 import {TILE} from './chain-layout.js';
-import {TileGeometryCache} from './tile-geometry.js';
+import {TileGeometryCache,roundedRect} from './tile-geometry.js';
 import {createTileMaterials,disposeMaterials,setClearcoat} from './materials.js';
 export {roundedRect,roundedSlab} from './tile-geometry.js';
 
@@ -10,7 +10,10 @@ export {roundedRect,roundedSlab} from './tile-geometry.js';
 export class TilePresenter {
   constructor() {
     this.geometry=new TileGeometryCache();this.materials=createTileMaterials();
-    this.emblem=new THREE.CircleGeometry(.09,24);this.emblem.rotateX(-Math.PI/2);
+    // Back inlay with 0..1 UVs across its face, slightly inset from the bevel.
+    const iw=TILE.length-.11,id=TILE.width-.1;this.inlay=new THREE.ShapeGeometry(roundedRect(iw,id,.05),6);
+    const uv=this.inlay.attributes.uv,pos=this.inlay.attributes.position;for(let i=0;i<uv.count;i++)uv.setXY(i,pos.getX(i)/iw+.5,pos.getY(i)/id+.5);
+    this.inlay.rotateX(-Math.PI/2);
     this.contact=new THREE.PlaneGeometry(1.24,.62);this.contact.rotateX(-Math.PI/2);
   }
   face(left,right,parent,ghost=false) {
@@ -33,17 +36,17 @@ export class TilePresenter {
     // A sub-degree twist keeps a long chain from looking machine-placed without moving any footprint.
     orient.rotation.y=(left>right?Math.PI:0)+(ghost?0:((seed>>3)%7-3)*.0035);
   }
-  // A reverse only: plain ivory with a small brass emblem, no face geometry at all.
+  // A reverse only: ivory body with a blue lacquered back, no face geometry at all.
   reverse(parent) {
     const g=new THREE.Group();parent.add(g);
     const body=new THREE.Mesh(this.geometry.reverse,this.materials.ivory[0]);body.castShadow=true;body.receiveShadow=true;g.add(body);
-    const emblem=new THREE.Mesh(this.emblem,this.materials.emblem);emblem.position.y=TILE.height/2+.002;g.add(emblem);
+    const back=new THREE.Mesh(this.inlay,this.materials.back);back.position.y=TILE.height/2+.0015;g.add(back);
     return g;
   }
   applyQuality(profile){setClearcoat(this.materials.ivory,profile.clearcoat);}
   dispose() {
-    const m=this.materials;this.geometry.dispose();this.emblem.dispose();this.contact.dispose();
-    disposeMaterials([...m.ivory,m.ink,m.emblem,m.contact,m.ghostIvory,m.ghostInk]);m.grain.dispose();m.roughness.dispose();
+    const m=this.materials;this.geometry.dispose();this.inlay.dispose();this.contact.dispose();
+    disposeMaterials([...m.ivory,m.ink,m.back,m.contact,m.ghostIvory,m.ghostInk]);m.grain.dispose();m.roughness.dispose();
   }
 }
 function hash(a,b){let h=(a*7+b)*2654435761>>>0;h^=h>>>13;return h>>>0;}

@@ -1,5 +1,20 @@
 # Mesa de referencia, cámara elevada y recorrido de práctica
 
+## Revisión 5 (2 de noviembre de 2026): identidad «Quisqueya Competitivo»
+
+Rediseño completo según la imagen de referencia, sobre la misma arquitectura (HTML/CSS, Three.js r180, motor C#). Reglas, reparto, turnos y puntuación no cambian.
+
+- **Tema** `theme.css`: paleta azul noche, azul y rojo de la bandera, cian para turno y selección, tipografías Exo 2 / Barlow (OFL, autoalojadas), espaciado, bordes luminosos y estados. `screens.css` (portada, paneles, diálogos) y `game.css` (HUD vertical y horizontal) solo usan esos tokens.
+- **Portada**: logo con dos fichas, render real de la mesa (`assets/portada.webp`, generado con `tests/visual/render-cover.mjs`), botones Jugar ahora (rojo), Crear mesa, Unirme, Practicar y «Volver a mi partida» solo si hay partida. Jugar ahora abre una mesa contra bots con tu última configuración; el juego en línea sigue sin existir y Unirme lo indica.
+- **Mesa**: fieltro azul, reverso azul en las fichas rivales (miran hacia la mesa), placa con la bandera centrada en mi riel, sala oscura «Club de dominó» (nuevo escenario predeterminado; C# acepta `club`).
+- **Exactamente cuatro jugadores**: Tú (abajo), compañero (arriba), rivales a los lados; el turno se marca con icono y texto, no solo color.
+- **Vertical**: mesa alta (3,3 × 5,7) y cadena transpuesta en columnas, sin girar asientos ni reducir fichas. **Horizontal**: mesa ancha. Rotar solo cambia la presentación (prueba: mismas 26 fichas, misma revisión, ninguna escritura al servidor).
+- **HUD**: marcador compacto, «Tu turno» y temporizador real (deadline del servidor), mensajes rápidos plegados en un botón, resultado con pintas, capicúa y bonos reales. No hay «Robar» (no hay pozo con 4 jugadores) ni «Pasar»: los pasos siguen siendo automáticos.
+
+**Comprobado**: 13 pruebas Node (incluye cadena y encuadre verticales), práctica C# (78), Playwright 9/9, y `tests/visual/captures.mjs` en 360×800, 390×844, 430×932, 800×360, 844×390, 932×430 y 1440×900 sin recortes, con 4 etiquetas, 7 fichas ≥ 41 px y 0 caras rivales. Capturas `docs/capturas/quisqueya-*.png`.
+
+**Pendiente**: medición en teléfonos reales; juego en línea; la pantalla «choice» antigua queda sin enlace.
+
 ## Revisión 4 (2 de noviembre de 2026): materiales físicos, fichas con cavidades e iluminación PBR
 
 Mejora gráfica sobre el mismo motor (Three.js r180 vendorizado, sin migración ni motores adicionales). Reglas, puntuación, turnos, sincronización, cámara y controles no cambian.

@@ -4,7 +4,7 @@ const $=id=>document.getElementById(id);
 const fields={name:'table-name',target:'table-target',turnSeconds:'table-time',difficulty:'table-difficulty',environment:'table-environment',bonus:'table-bonus',quickMessages:'table-messages',
   partner:'table-partner',nextOpener:'rule-next',counting:'rule-counting',blockRule:'rule-block',blockTie:'rule-tie',capicua:'rule-capicua',pasoCorrido:'rule-run',paseSalida:'rule-opening'};
 const numeric=new Set(['target','turnSeconds','bonus']);
-const defaults={name:'La mesa de los panas',target:200,turnSeconds:0,difficulty:'intermediate',environment:'courtyard',quickMessages:true,partner:'ana',...RULE_DEFAULTS};
+const defaults={name:'La mesa de los panas',target:200,turnSeconds:0,difficulty:'intermediate',environment:'club',quickMessages:true,partner:'ana',...RULE_DEFAULTS};
 const practiceDefaults={...defaults,name:'Práctica en el patio'};
 const routes=['home','choice','config','lobby','game','profile','join'];
 
@@ -15,7 +15,8 @@ export class PatioNavigation {
     try{this.draft={...this.draft,...JSON.parse(localStorage.getItem('patio-table-draft')||'{}')};}catch{}
     this.writeDraft();
     document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>this.go(b.dataset.back));
-    for(const id of ['lets-play','home-quick'])$(id).onclick=()=>this.go('choice');
+    // Jugar ahora: straight to a table with your last saved conditions. Online matchmaking does not exist yet.
+    $('home-quick').onclick=()=>this.quickPlay();
     for(const id of ['home-create','choice-create'])$(id).onclick=()=>this.go('config');
     for(const id of ['home-practice','choice-practice','join-practice'])$(id).onclick=()=>this.practice();
     $('home-join').onclick=()=>this.go('join');$('home-profile').onclick=()=>this.go('profile');
@@ -52,7 +53,7 @@ export class PatioNavigation {
   saveDraft(){this.draft=this.readDraft();try{localStorage.setItem('patio-table-draft',JSON.stringify(this.draft));}catch{}this.updateBadge();}
   writeDraft(){for(const [key,id] of Object.entries(fields)){const el=$(id),value=this.draft[key]??defaults[key];if(el.type==='checkbox')el.checked=!!value;else{el.value=String(value);if(el.selectedIndex<0)el.value=String(defaults[key]);}}this.updateBadge();}
   updateBadge(){$('rules-badge').textContent=isDefaultRules(this.draft)?'Patio RD / 1':'Patio RD / 1 con variantes de la casa';}
-  updatePreview(){const name=$('table-environment').value;$('environment-preview').dataset.environment=name;$('environment-label').textContent=name==='terrace'?'Terraza frente al mar':'Patio de barrio';this.onEnvironment(name);}
+  updatePreview(){const name=$('table-environment').value;$('environment-preview').dataset.environment=name;$('environment-label').textContent=name==='terrace'?'Terraza frente al mar':name==='club'?'Club de dominó':'Patio de barrio';this.onEnvironment(name);}
   validateCode(){
     const code=$('join-code').value.trim();
     $('join-error').textContent=!code?'Escribe el código que te compartió el anfitrión.':/^[a-f\d]{32}$/i.test(code)?'El formato es válido, pero este cliente aún no puede entrar a mesas en línea. No se creará una conexión ficticia.':'El código tiene 32 caracteres (números 0–9 y letras a–f). Revisa la invitación.';
@@ -74,6 +75,11 @@ export class PatioNavigation {
     $('lobby-notice').classList.toggle('notice-changed',!!(previous&&changes.length));
   }
   async leaveLobby(){if(this.busy)return;this.busy=true;try{await this.action('leave');this.go('home');}catch(e){$('lobby-error').textContent=e.message;}finally{this.busy=false;}}
+  async quickPlay() {
+    if(this.getState()?.accepted){await this.play();return;}
+    if(this.busy)return;this.busy=true;
+    try{await this.action('configure',{...defaults,...this.draft});this.announce(null);this.go('lobby');}catch(e){this.onError(e.message);}finally{this.busy=false;}
+  }
   async practice() {
     if(this.getState()?.accepted){await this.play();return;}
     if(this.busy)return;this.busy=true;

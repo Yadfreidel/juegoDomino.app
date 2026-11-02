@@ -16,6 +16,10 @@
 | .NET / ASP.NET | Microsoft | Componentes de runtime/SDK; licencias de sus distribuciones |
 | Three.js 0.180.0, BufferGeometryUtils y RoomEnvironment (GLTFLoader retirado con los avatares) | Paquete oficial `three@0.180.0` servido por jsDelivr; `examples/jsm/environments/RoomEnvironment.js` añadido el 2 de noviembre de 2026 a `vendor/environments/` sin modificar | MIT; texto en `src/Domino.Desktop/wwwroot/vendor/THREE-LICENSE.txt` |
 | Texturas web de piedra, madera del entorno, sombras de contacto y oclusión del borde del paño | Canvas procedural en este proyecto | Originales, sin fotografías descargadas |
+| Tipografías Exo 2 (cursiva 700–900) y Barlow (500/600/700) (`assets/fonts/*.woff2`) | Google Fonts (`fonts.gstatic.com`), subconjunto latino, descargadas el 2 de noviembre de 2026 y servidas desde el proyecto | **SIL Open Font License 1.1**; textos en `assets/fonts/OFL-Exo2.txt` y `OFL-Barlow.txt` |
+| Portada (`assets/portada.webp`, 1200×900, 69 KB) | Render de la propia escena 3D (mesa, fichas, materiales y luces del proyecto) con `tests/visual/render-cover.mjs`, compuesto sobre un degradado del tema | Original; no se usa la imagen de referencia |
+| Iconos (sprite SVG en `index.html`) y logotipo de dos fichas | Dibujados en código para este proyecto | Originales |
+| Imagen de referencia «Quisqueya Competitivo» | Usuario, dirección artística | No se distribuye ni se usa como textura o fondo |
 | Iluminación ambiental | `RoomEnvironment` prefiltrado con `PMREMGenerator` en la GPU al iniciar | Generado, sin archivo HDR descargado |
 | Música ambiental web | Acorde sintetizado en Web Audio | Original, sin grabaciones externas; volumen independiente |
 | Playwright 1.64.1 / Chromium de pruebas | Registro npm y CDN oficial Playwright | Herramienta de desarrollo; no se incluye el navegador en la app |
