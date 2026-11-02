@@ -1,0 +1,70 @@
+# Builds the static version of Dominó Patio RD and publishes it on GitHub Pages.
+# The practice authority (C# PracticeMatch) is compiled to WebAssembly and runs in the browser,
+# so no server is needed. Requires Settings → Pages → Source: "GitHub Actions".
+name: Publicar en GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-dotnet@v5
+        with:
+          dotnet-version: 10.0.x
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+
+      - name: Pruebas de reglas y práctica
+        run: |
+          dotnet run --project tests/Domino.Tests -c Release
+          dotnet run --project tests/Domino.Practice -c Release
+
+      - name: Pruebas del cliente (layout, cliente y geometría de fichas)
+        run: node --test tests/visual/layout.test.mjs tests/visual/game-client.test.mjs tests/visual/tile-geometry.test.mjs
+
+      - name: Compilar el motor a WebAssembly
+        run: dotnet publish src/Domino.Web -c Release -o build
+
+      - name: Montar el sitio
+        run: |
+          mkdir -p site
+          cp -r build/wwwroot/. site/
+          cp -r src/Domino.Desktop/wwwroot/. site/
+          rm -f site/package.json
+          # Same client as the desktop app, but answered by the in-page engine instead of /api.
+          sed -i 's#<meta name="patio-engine" content="server">#<meta name="patio-engine" content="browser">#' site/index.html
+          grep -q 'patio-engine" content="browser"' site/index.html
+          touch site/.nojekyll
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

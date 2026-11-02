@@ -23,6 +23,16 @@ Pública, emparejamiento, entrada real por código, voz y cuentas en línea **no
 
 Implementación, capturas y límites: [mejora gráfica](docs/EXPERIENCIA_GRAFICA.md). La versión Unity permanece separada y sin ejecutar en este entorno.
 
+## Publicar en GitHub Pages
+
+La misma app funciona como sitio estático: `src/Domino.Web` compila la autoridad de práctica (`PracticeMatch`, con las mismas reglas, bots y puntuación) a WebAssembly, y el cliente la consulta dentro de la página en lugar de `/api`. La elección la hace `<meta name="patio-engine">` en `index.html`: `server` en la app local y `browser` en el sitio publicado.
+
+1. En GitHub: **Settings → Pages → Build and deployment → Source: GitHub Actions** (no «Deploy from a branch»).
+2. Cada push a `main` ejecuta `.github/workflows/pages.yml`: pruebas de reglas y del cliente, compilación WebAssembly, montaje del sitio y publicación. También se puede lanzar a mano desde **Actions → Publicar en GitHub Pages → Run workflow**.
+3. La dirección queda en `https://<usuario>.github.io/<repositorio>/`.
+
+Diferencias con la app local: la práctica vive en la memoria de la pestaña (recargar la página la reinicia, aunque las preferencias se conservan), y el servidor WebSocket experimental no se publica. La primera carga descarga unos 8 MB (motor .NET, Three.js y texturas).
+
 ## Comprobar la versión gráfica
 
 ```powershell

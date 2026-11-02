@@ -15,7 +15,7 @@ export const TABLE=Object.freeze({
 const RACKS={0:{x:0,z:3.62,yaw:0},1:{x:5.75,z:0,yaw:Math.PI/2},2:{x:0,z:-3.62,yaw:Math.PI},3:{x:-5.75,z:0,yaw:-Math.PI/2}};
 // Beside each support, never over its reverses.
 const LABELS={1:[6.15,-2.85],2:[-3.55,-4.4],3:[-6.15,-2.85]};
-const FLAG_URL='/assets/bandera-republica-dominicana.svg';
+const FLAG_URL='assets/bandera-republica-dominicana.svg';
 const TILT=.75;
 
 // Static table: frame, felt, four low supports, flag and tricolour details. Materials are shared and

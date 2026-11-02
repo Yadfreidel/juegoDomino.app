@@ -8,5 +8,7 @@ if($LASTEXITCODE -ne 0) { throw 'Dominio falló' }
 if($LASTEXITCODE -ne 0) { throw 'Práctica falló' }
 & $sdk build (Join-Path $taskRoot 'src/Domino.Server') -c Release
 if($LASTEXITCODE -ne 0) { throw 'Servidor no compila' }
+& $sdk build (Join-Path $taskRoot 'src/Domino.Web') -c Release
+if($LASTEXITCODE -ne 0) { throw 'Motor WebAssembly no compila' }
 & $sdk run --project (Join-Path $taskRoot 'tests/Domino.Integration') -c Release -- $taskRoot
 if($LASTEXITCODE -ne 0) { throw 'Integración falló' }

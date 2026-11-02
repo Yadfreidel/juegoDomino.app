@@ -2,7 +2,7 @@ import * as THREE from './vendor/three.module.js';
 
 // PBR surfaces for the table and the tiles. Texture sets are CC0 Poly Haven scans kept in
 // assets/textures (origin and licence in docs/RECURSOS.md); everything else is generated here once.
-const TEXTURE_ROOT='/assets/textures/';
+const TEXTURE_ROOT='assets/textures/';
 // Table units covered by one texture repeat. A tile is 1.06 units long (about 5 cm), so the
 // walnut sheet (1 m scan) spans ~45 cm and the linen (27 cm scan) keeps a fine, realistic weave.
 export const TEXTURE_SPAN=Object.freeze({wood:9.5,felt:2.6,ivory:1.7});
