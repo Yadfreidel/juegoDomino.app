@@ -1,0 +1,13 @@
+.tools/
+**/bin/
+**/obj/
+**/Library/
+**/Temp/
+**/Logs/
+**/UserSettings/
+*.user
+.env
+data/
+**/node_modules/
+**/test-results/
+**/playwright-report/

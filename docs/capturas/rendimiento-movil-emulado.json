@@ -1,0 +1,30 @@
+{
+  "samples": 93,
+  "meanFrameMs": 231.17387096774195,
+  "p95FrameMs": 333.3999999999978,
+  "approxFps": 4.325748389356426,
+  "drawCalls": 105,
+  "triangles": 65366,
+  "geometries": 64,
+  "textures": 17,
+  "viewport": [
+    844,
+    390
+  ],
+  "quality": "medium",
+  "pixelRatio": 1,
+  "shadows": true,
+  "camera": {
+    "yaw": 0,
+    "tilt": 0,
+    "zoom": 1,
+    "inspecting": false,
+    "position": [
+      0,
+      9.984862574643447,
+      11.698152704241625
+    ]
+  },
+  "opponentFaces": 0,
+  "pooledTiles": 0
+}

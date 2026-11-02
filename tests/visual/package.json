@@ -1,0 +1,1 @@
+{"name":"patio-rd-visual-tests","private":true,"type":"module","scripts":{"test":"playwright test","test:layout":"node --test layout.test.mjs"},"devDependencies":{"@playwright/test":"1.64.1"}}

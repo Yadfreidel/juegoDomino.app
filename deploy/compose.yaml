@@ -1,0 +1,23 @@
+services:
+  server:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - matches:/data
+  # Schema preview only; the running prototype uses FileMatchRepository.
+  postgres:
+    image: postgres:17
+    profiles: [postgres-preview]
+    environment:
+      POSTGRES_DB: patio
+      POSTGRES_USER: patio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d:ro
+volumes:
+  matches:
+  postgres:

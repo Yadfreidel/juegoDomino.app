@@ -1,0 +1,325 @@
+{
+  "browser": "156.0.8078.4",
+  "report": [
+    {
+      "view": "pc",
+      "fixture": "larga",
+      "metrics": {
+        "samples": 58,
+        "meanFrameMs": 1071.5084137931035,
+        "p95FrameMs": 1233.2000000000044,
+        "approxFps": 0.933263786945017,
+        "drawCalls": 174,
+        "triangles": 128889,
+        "geometries": 117,
+        "textures": 18,
+        "viewport": [
+          1440,
+          900
+        ],
+        "quality": "high",
+        "pixelRatio": 1,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": true,
+          "position": [
+            0.132171565336592,
+            18.271870426291336,
+            3.917341414364625
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 26
+      },
+      "errors": [
+        "[.WebGL-0x504400425600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "[.WebGL-0x504400425600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "[.WebGL-0x504400425600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels",
+        "[.WebGL-0x504400425600]GL Driver Message (OpenGL, Performance, GL_CLOSE_PATH_NV, High): GPU stall due to ReadPixels (this message will no longer repeat)"
+      ]
+    },
+    {
+      "view": "pc",
+      "fixture": "corta",
+      "metrics": {
+        "samples": 8,
+        "meanFrameMs": 995.78375,
+        "p95FrameMs": 2599.9,
+        "approxFps": 1.0042341020326953,
+        "drawCalls": 105,
+        "triangles": 70379,
+        "geometries": 69,
+        "textures": 18,
+        "viewport": [
+          1440,
+          900
+        ],
+        "quality": "high",
+        "pixelRatio": 1,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": false,
+          "position": [
+            0,
+            16.260083213751724,
+            9.493907743744586
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 3
+      },
+      "errors": []
+    },
+    {
+      "view": "movil-h",
+      "fixture": "larga",
+      "metrics": {
+        "samples": 66,
+        "meanFrameMs": 524.4753030303029,
+        "p95FrameMs": 599.8999999999996,
+        "approxFps": 1.906667471704044,
+        "drawCalls": 112,
+        "triangles": 99363,
+        "geometries": 119,
+        "textures": 18,
+        "viewport": [
+          844,
+          390
+        ],
+        "quality": "medium",
+        "pixelRatio": 1.25,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": true,
+          "position": [
+            0.13248364820095881,
+            9.104433746782952,
+            1.617612751690996
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 26
+      },
+      "errors": []
+    },
+    {
+      "view": "movil-h",
+      "fixture": "corta",
+      "metrics": {
+        "samples": 12,
+        "meanFrameMs": 524.9891666666667,
+        "p95FrameMs": 2183.2999999999997,
+        "approxFps": 1.904801210183702,
+        "drawCalls": 108,
+        "triangles": 70607,
+        "geometries": 71,
+        "textures": 18,
+        "viewport": [
+          844,
+          390
+        ],
+        "quality": "medium",
+        "pixelRatio": 1.25,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": false,
+          "position": [
+            0,
+            9.990061652917095,
+            11.696368482164502
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 3
+      },
+      "errors": []
+    },
+    {
+      "view": "movil-v",
+      "fixture": "larga",
+      "metrics": {
+        "samples": 68,
+        "meanFrameMs": 351.21279411764704,
+        "p95FrameMs": 416.7000000000007,
+        "approxFps": 2.8472766845305366,
+        "drawCalls": 92,
+        "triangles": 79091,
+        "geometries": 118,
+        "textures": 18,
+        "viewport": [
+          390,
+          844
+        ],
+        "quality": "medium",
+        "pixelRatio": 1.25,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": true,
+          "position": [
+            0.13248364820095881,
+            17.27415042436213,
+            3.6540730752105053
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 26
+      },
+      "errors": []
+    },
+    {
+      "view": "movil-v",
+      "fixture": "corta",
+      "metrics": {
+        "samples": 14,
+        "meanFrameMs": 347.6121428571428,
+        "p95FrameMs": 2116.7,
+        "approxFps": 2.8767694700785156,
+        "drawCalls": 109,
+        "triangles": 70427,
+        "geometries": 70,
+        "textures": 18,
+        "viewport": [
+          390,
+          844
+        ],
+        "quality": "medium",
+        "pixelRatio": 1.25,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": false,
+          "position": [
+            0,
+            53.17946893953225,
+            18.595045978457428
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 3
+      },
+      "errors": []
+    },
+    {
+      "view": "movil-h",
+      "quality": "low",
+      "metrics": {
+        "samples": 15,
+        "meanFrameMs": 306.658,
+        "p95FrameMs": 2033.2,
+        "approxFps": 3.260961722831297,
+        "drawCalls": 177,
+        "triangles": 129117,
+        "geometries": 117,
+        "textures": 17,
+        "viewport": [
+          844,
+          390
+        ],
+        "quality": "low",
+        "pixelRatio": 1,
+        "shadows": false,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": false,
+          "position": [
+            0,
+            9.986268261839987,
+            11.704061848682272
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 26
+      },
+      "errors": []
+    },
+    {
+      "view": "movil-h",
+      "quality": "medium",
+      "metrics": {
+        "samples": 17,
+        "meanFrameMs": 568.6089411764706,
+        "p95FrameMs": 1916.5819999999999,
+        "approxFps": 1.7586779376542465,
+        "drawCalls": 177,
+        "triangles": 129117,
+        "geometries": 117,
+        "textures": 18,
+        "viewport": [
+          844,
+          390
+        ],
+        "quality": "medium",
+        "pixelRatio": 1.25,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": false,
+          "position": [
+            0,
+            9.985743305660403,
+            11.705126510936495
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 26
+      },
+      "errors": []
+    },
+    {
+      "view": "movil-h",
+      "quality": "high",
+      "metrics": {
+        "samples": 10,
+        "meanFrameMs": 1234.9569999999999,
+        "p95FrameMs": 3033.3,
+        "approxFps": 0.8097447927336742,
+        "drawCalls": 177,
+        "triangles": 129117,
+        "geometries": 117,
+        "textures": 18,
+        "viewport": [
+          844,
+          390
+        ],
+        "quality": "high",
+        "pixelRatio": 2,
+        "shadows": true,
+        "camera": {
+          "yaw": 0,
+          "tilt": 0,
+          "zoom": 1,
+          "inspecting": false,
+          "position": [
+            0,
+            10.000605679645185,
+            11.674984169146562
+          ]
+        },
+        "opponentFaces": 0,
+        "pooledTiles": 26
+      },
+      "errors": []
+    }
+  ]
+}
