@@ -1,6 +1,6 @@
 # Dominó Caos
 
-En **Crear mesa**, elige Dominó Caos y su variante visual o con reglas. El botón ✦ junto a tu mano abre cuatro poderes por página. Selecciona, consulta, elige rival o ficha cuando corresponda y activa. Escape cancela; las flechas recorren los controles. Clásico sigue siendo el valor predeterminado.
+En **Crear mesa**, elige Dominó Caos y su variante visual o con reglas. El botón **Poderes Caos** junto a tu mano muestra los usos restantes y abre el catálogo completo de poderes, con desplazamiento en móvil. También permite volver al menú radial por páginas. Selecciona, consulta, elige rival o ficha cuando corresponda y activa. Escape cancela; las flechas recorren los controles. Clásico sigue siendo el valor predeterminado.
 
 ## Arquitectura
 

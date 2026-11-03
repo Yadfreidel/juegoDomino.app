@@ -1,4 +1,4 @@
-import {ChaosMenu} from './chaos-menu.js';
+import {ChaosMenu} from './chaos-menu.js?v=caos-panel-2';
 import {pipPattern} from './chain-layout.js';
 import {PlacementController,sameTile,legalEnds} from './placement-controller.js';
 import {GameClient} from './game-client.js';

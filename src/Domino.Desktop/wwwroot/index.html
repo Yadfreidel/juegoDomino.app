@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#070d1b"><meta name="patio-engine" content="server"><title>Dominó Patio RD</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="preload" href="assets/fonts/exo2-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="screens.css"><link rel="stylesheet" href="game.css">
+  <link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="preload" href="assets/fonts/exo2-italic.woff2" as="font" type="font/woff2" crossorigin><link rel="stylesheet" href="theme.css"><link rel="stylesheet" href="screens.css"><link rel="stylesheet" href="game.css?v=caos-panel-2">
   <script type="importmap">{"imports":{"three":"./vendor/three.module.js"}}</script>
 </head>
 <body class="outside-game">
@@ -136,7 +136,7 @@
       <span class="pill turn-pill" id="turn-pill"><svg class="icon" aria-hidden="true"><use href="#i-turn"/></svg><strong id="turn-label">La mesa está lista</strong></span>
       <span class="pill timer-pill" id="turn-timer" hidden><svg class="icon" aria-hidden="true"><use href="#i-timer"/></svg><span id="timer-value">—</span></span>
     </div>
-    <button id="chaos-toggle" class="chaos-toggle" hidden aria-label="Abrir poderes de Dominó Caos" aria-expanded="false">✦</button><section id="chaos-menu" class="chaos-menu" hidden aria-label="Poderes de Dominó Caos"></section>
+    <button id="chaos-toggle" class="chaos-toggle" hidden aria-label="Poderes Caos" aria-controls="chaos-menu" aria-expanded="false"><span aria-hidden="true">✦</span> Poderes Caos <span id="chaos-uses"></span></button><section id="chaos-menu" class="chaos-menu" hidden aria-label="Poderes de Dominó Caos"></section>
     <div class="hand-wrap"><div class="rack-edge"></div><div id="hand" class="hand" aria-label="Tu mano"></div><div class="rack-front"></div></div>
     <div class="action-bar">
       <button class="icon-btn" id="sort" aria-label="Ordenar mano" aria-pressed="false"><svg class="icon"><use href="#i-sort"/></svg></button>
@@ -154,5 +154,5 @@
   <dialog id="help-dialog" class="modal compact"><span class="eyebrow">BUENA ESA, FRENTE</span><h2>Así se juega.</h2><ol><li>Toca una ficha de tu mano. Las que tienen jugada llevan una marca verde.</li><li>Toca una de sus previsualizaciones verdes sobre la mesa para jugar. También puedes arrastrar la ficha y soltarla allí.</li><li>Si sueltas fuera de un destino válido, la ficha vuelve a tu mano. Cancela con ✕ o Escape. En ajustes puedes activar la confirmación.</li></ol><p>«Elegir extremo» ofrece una alternativa con botones y teclado. Arrastrar el escenario mueve la cámara; «↺» restablece la vista. Los pasos son automáticos. Tu pareja se sienta enfrente. Gana la pareja que alcance la meta de la mesa al cerrar una mano. Si un extremo válido queda fuera de tu vista, su marcador aparece en el borde con una flecha: tócalo o arrastra la ficha hasta él.</p><button class="primary" id="close-help">Vamos arriba</button></dialog>
   <div id="fatal" class="fatal" hidden><h2>No pudimos abrir la mesa.</h2><p id="fatal-message"></p><button onclick="location.reload()" class="primary">Volver a intentar</button></div>
   <div id="connection-status" class="connection-status" role="alert" hidden></div>
-  <script type="module" src="app.js"></script>
+  <script type="module" src="app.js?v=caos-panel-2"></script>
 </body></html>
