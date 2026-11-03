@@ -17,7 +17,7 @@ function tableLayout(name,fx,fz) {
     steepest:name==='portrait'?80:70,
     racks:{1:{x:fx+.35,z:0,yaw:Math.PI/2},2:{x:0,z:-(fz+.32),yaw:Math.PI},3:{x:-(fx+.35),z:0,yaw:-Math.PI/2}},
     // Each label sits on the rail at the far end of that player's support, never over its tiles.
-    labels:{0:[-1.45,flagZ],1:[fx+.4,-2.95],2:[0,-(fz+.62)],3:[-(fx+.4),-2.95]},
+    labels:{0:[-2.05,flagZ],1:[fx+.4,-2.95],2:[0,-(fz+.62)],3:[-(fx+.4),-2.95]},
     flagZ
   });
 }

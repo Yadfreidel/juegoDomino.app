@@ -6,7 +6,7 @@ const fields={name:'table-name',target:'table-target',turnSeconds:'table-time',d
 const numeric=new Set(['target','turnSeconds','bonus']);
 const defaults={name:'La mesa de los panas',target:200,turnSeconds:0,difficulty:'intermediate',environment:'club',quickMessages:true,partner:'ana',...RULE_DEFAULTS};
 const practiceDefaults={...defaults,name:'Práctica en el patio'};
-const routes=['home','choice','config','lobby','game','profile','join'];
+const routes=['home','config','lobby','game','profile','join'];
 
 export class PatioNavigation {
   constructor({getState,action,enterGame,showDialog,onEnvironment,onError=()=>{}}) {
@@ -17,8 +17,8 @@ export class PatioNavigation {
     document.querySelectorAll('[data-back]').forEach(b=>b.onclick=()=>this.go(b.dataset.back));
     // Jugar ahora: straight to a table with your last saved conditions. Online matchmaking does not exist yet.
     $('home-quick').onclick=()=>this.quickPlay();
-    for(const id of ['home-create','choice-create'])$(id).onclick=()=>this.go('config');
-    for(const id of ['home-practice','choice-practice','join-practice'])$(id).onclick=()=>this.practice();
+    $('home-create').onclick=()=>this.go('config');
+    for(const id of ['home-practice','join-practice'])$(id).onclick=()=>this.practice();
     $('home-join').onclick=()=>this.go('join');$('home-profile').onclick=()=>this.go('profile');
     $('home-help').onclick=()=>showDialog('help-dialog');$('home-settings').onclick=()=>showDialog('settings-dialog');
     $('resume').onclick=()=>this.play();$('ready').onclick=()=>this.ready();

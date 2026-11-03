@@ -13,7 +13,9 @@ Rediseño completo según la imagen de referencia, sobre la misma arquitectura (
 
 **Comprobado**: 13 pruebas Node (incluye cadena y encuadre verticales), práctica C# (78), Playwright 9/9, y `tests/visual/captures.mjs` en 360×800, 390×844, 430×932, 800×360, 844×390, 932×430 y 1440×900 sin recortes, con 4 etiquetas, 7 fichas ≥ 41 px y 0 caras rivales. Capturas `docs/capturas/quisqueya-*.png`.
 
-**Pendiente**: medición en teléfonos reales; juego en línea; la pantalla «choice» antigua queda sin enlace.
+**Limpieza (3 de noviembre de 2026)**: eliminadas las hojas antiguas (`styles.css`, `interaction.css`, `navigation.css`, `presentation.css`, `table-ui.css`) y la pantalla «choice» sin enlace. En horizontal el mensaje va arriba al centro (máx. 2 líneas) y la etiqueta «Tú» junto a la bandera, sin taparla. Capturas regeneradas en los 7 tamaños: 26 comprobaciones sin problemas; `verify.ps1` PASS.
+
+**Pendiente (no se puede resolver desde este entorno)**: medir en teléfonos y GPU reales (aquí solo hay Chromium con WebGL por CPU); juego en línea (emparejamiento, salas por código y cuentas no existen en el cliente; requieren servidor público con HTTPS/WSS).
 
 ## Revisión 4 (2 de noviembre de 2026): materiales físicos, fichas con cavidades e iluminación PBR
 

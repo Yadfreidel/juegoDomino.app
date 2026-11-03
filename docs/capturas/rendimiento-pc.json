@@ -1,10 +1,10 @@
 {
   "samples": 4,
-  "meanFrameMs": 995.7800000000001,
-  "p95FrameMs": 2299.9500000000003,
-  "approxFps": 1.004237883869931,
+  "meanFrameMs": 895.7965000000002,
+  "p95FrameMs": 2083.2160000000003,
+  "approxFps": 1.1163249688963954,
   "drawCalls": 78,
-  "triangles": 62812,
+  "triangles": 61968,
   "geometries": 40,
   "textures": 19,
   "viewport": [

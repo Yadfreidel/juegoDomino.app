@@ -1,11 +1,11 @@
 {
   "samples": 83,
-  "meanFrameMs": 244.36710843373496,
-  "p95FrameMs": 333.40000000000146,
-  "approxFps": 4.092203760192915,
-  "drawCalls": 78,
-  "triangles": 56870,
-  "geometries": 63,
+  "meanFrameMs": 239.34783132530114,
+  "p95FrameMs": 333.2999999999997,
+  "approxFps": 4.178019890394935,
+  "drawCalls": 77,
+  "triangles": 55220,
+  "geometries": 61,
   "textures": 17,
   "viewport": [
     844,
@@ -22,10 +22,10 @@
     "inspecting": false,
     "position": [
       0,
-      10.353075586907913,
-      11.369905990352626
+      10.352655981920451,
+      11.366664108728747
     ]
   },
   "opponentFaces": 0,
-  "pooledTiles": 2
+  "pooledTiles": 1
 }
