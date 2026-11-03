@@ -13,7 +13,7 @@ export class PlacementController {
     window.addEventListener('pointermove',this.move,{passive:false});window.addEventListener('pointerup',this.up);window.addEventListener('pointercancel',this.abort);
     this.lostFocus=()=>this.cancel();window.addEventListener('blur',this.lostFocus);window.addEventListener('resize',this.lostFocus);
   }
-  allowed(){const s=this.getState();return s?.accepted&&!s.result&&s.turn===0&&!this.busy&&!this.scene.isPlacing;}
+  allowed(){const s=this.getState();return s?.accepted&&!s.result&&s.turn===0&&!this.busy&&!this.scene.isPlacing&&!this.scene.chaosBusy;}
   select(tile) {
     if(!this.allowed())return;
     this.selected=tile;this.chosen=null;this.pending=false;this.onSound?.('select');this.refresh();

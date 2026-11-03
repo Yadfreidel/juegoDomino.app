@@ -34,7 +34,7 @@ export async function browserTransport(path,body) {
   bridge??=loadBridge().catch(error=>{bridge=null;throw new Error('No se pudo iniciar el motor del juego en este navegador: '+error.message);});
   const engine=await bridge,name=path[0].toUpperCase()+path.slice(1);
   if(typeof engine[name]!=='function')return new Response('',{status:404});
-  const envelope=JSON.parse(path==='configure'||path==='play'?engine[name](JSON.stringify(body??{})):engine[name]());
+  const envelope=JSON.parse(path==='configure'||path==='play'||path==='power'?engine[name](JSON.stringify(body??{})):engine[name]());
   return new Response(envelope.body,{status:envelope.status,headers:{'Content-Type':'application/json'}});
 }
 // <meta name="patio-engine" content="browser"> is written by the GitHub Pages build.

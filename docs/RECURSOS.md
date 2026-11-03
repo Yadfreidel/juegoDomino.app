@@ -20,6 +20,8 @@
 | Portada (`assets/portada.webp`, 1200×900, 69 KB) | Render de la propia escena 3D (mesa, fichas, materiales y luces del proyecto) con `tests/visual/render-cover.mjs`, compuesto sobre un degradado del tema | Original; no se usa la imagen de referencia |
 | Iconos (sprite SVG en `index.html`) y logotipo de dos fichas | Dibujados en código para este proyecto | Originales |
 | Imagen de referencia «Quisqueya Competitivo» | Usuario, dirección artística | No se distribuye ni se usa como textura o fondo |
+| Patio de barrio (colmado, letrero, sillas, bombillas), vasos de ron y cerveza, iconos de lanzamiento | Geometría y texturas de canvas creadas en código (`scene.js`, `table-props.js`, sprite SVG) | Originales; «Colmado La Esquina» es un nombre genérico inventado |
+| Sonidos de colocación (suave, golpe, deslizamiento) | Síntesis Web Audio en `sound.js` | Originales, sin grabaciones |
 | Iluminación ambiental | `RoomEnvironment` prefiltrado con `PMREMGenerator` en la GPU al iniciar | Generado, sin archivo HDR descargado |
 | Música ambiental web | Acorde sintetizado en Web Audio | Original, sin grabaciones externas; volumen independiente |
 | Playwright 1.64.1 / Chromium de pruebas | Registro npm y CDN oficial Playwright | Herramienta de desarrollo; no se incluye el navegador en la app |

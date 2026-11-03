@@ -1,5 +1,21 @@
 # Mesa de referencia, cámara elevada y recorrido de práctica
 
+## Revisión 6 (3 de noviembre de 2026): partida de barrio, primera persona y lanzamientos
+
+Pantalla de partida rediseñada según la referencia del patio dominicano. Reglas, bots, turnos, puntuación, autoridad y sincronización no cambian.
+
+- **Ambiente** «Patio de barrio» (predeterminado; C# acepta y valida el valor): noche cálida, fachada de colmado con letrero, bandera en la pared, sillas y mesa plásticas, bombillas colgadas. El decorado se atenúa para que la mesa sea protagonista. Fieltro verde (azul solo en «Club de dominó»). Vasos de ron con hielo y cerveza en las esquinas del riel (`table-props.js`), fuera del paño.
+- **Cámara** en horizontal: asiento en primera persona (inclinación ≤ 52°), mesa a todo el ancho útil; los rieles pueden salirse de pantalla, el paño nunca. Mirar a los lados sigue acotado; «Centrar» lo restablece.
+- **HUD**: marcador arriba a la izquierda, nombre real de la mesa al centro, ajustes / pantalla completa / salir a la derecha; barra lateral con estilo de lanzamiento, mensajes, reacciones, sonido, inspeccionar y centrar. Botones de 44 × 44 px, sin duplicados («Cómo jugar» pasa a Ajustes). Mensajes y reacciones se muestran solo en esta mesa local; no se envían a nadie.
+- **Menú radial** (`table-controls.js`): cuatro estilos, cerrado por defecto, ámbar en el elegido, cierre central, Escape o toque fuera (una capa transparente se queda el toque: nunca juega ni mueve la cámara), 180 ms, preferencia guardada. 160–220 px según el espacio; panel 2 × 2 si no cabe.
+- **Lanzamientos** (`launch-styles.js`, funciones puras): Suave 500 ms, Golpe 360 ms (vibración opcional), Giro 550 ms, Deslizar 600 ms. Solo se animan después de que la autoridad acepta la jugada y siempre terminan en la pose calculada por el diseño de la cadena; las fichas de los bots usan Suave. Movimiento reducido: 100 ms. Al volver a la pestaña, `finishMotion()` coloca todo en el estado real.
+- **Sonido**: golpe, toque suave y deslizamiento sintetizados, sincronizados con el aterrizaje; respetan volumen/silencio.
+- **Vertical**: aviso para pasar a horizontal y pantalla completa (requiere gesto del usuario); si el navegador no lo permite, la partida sigue en vertical.
+
+**Comprobado**: 15 pruebas Node (estilos terminan exactos y duran 250–600 ms; encuadre en primera persona), 7 Playwright nuevas (radial, persistencia, un solo envío por estilo con toques repetidos, reanudación, controles de 44 px en 800×360) además de las 9 existentes, y `captures.mjs` en los 7 tamaños: 26 comprobaciones sin problemas. Capturas `docs/capturas/barrio-*.png`.
+
+**Limitaciones**: no hay personas animadas (la referencia muestra jugadores reales: harían falta modelos 3D con licencia, rig y animaciones de manos); los oponentes son etiquetas y soportes con reversos. Decorado de geometría simple y texturas procedurales (sin fotos de colmado). Sin medición en teléfonos reales. El bloqueo de orientación no existe en iOS Safari.
+
 ## Revisión 5 (2 de noviembre de 2026): identidad «Quisqueya Competitivo»
 
 Rediseño completo según la imagen de referencia, sobre la misma arquitectura (HTML/CSS, Three.js r180, motor C#). Reglas, reparto, turnos y puntuación no cambian.

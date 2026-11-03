@@ -31,6 +31,7 @@ namespace Domino.Web
             var move=Read<Move>(body);
             lock(Match.Sync){return move==null?Result("Jugada no válida."):Result(Match.Play(move.Revision,move.A,move.B,move.End));}
         }
+        [JSExport] public static string Power(string body){var c=Read<PowerCommand>(body);lock(Match.Sync){return Result(c==null?"Poder inv?lido.":Match.Power(c));}}
         static T? Read<T>(string body) where T:class {try{return JsonSerializer.Deserialize<T>(body,Json);}catch(JsonException){return null;}}
         static string Result(string? error)=>error==null?Ok(Match.Snapshot()):Envelope(400,Match.Snapshot(error));
         static string Ok(object snapshot)=>Envelope(200,snapshot);

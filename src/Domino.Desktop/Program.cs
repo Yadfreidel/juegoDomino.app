@@ -33,6 +33,7 @@ app.MapPost("/api/start",(HttpContext ctx)=>{var m=Match(ctx);lock(m.Sync){m.Sta
 app.MapPost("/api/configure",(HttpContext ctx,PracticeSettings settings)=>{var m=Match(ctx);lock(m.Sync){var error=m.Configure(settings);return error==null?Results.Ok(m.Snapshot()):Results.BadRequest(m.Snapshot(error));}});
 app.MapPost("/api/leave",(HttpContext ctx)=>{var m=Match(ctx);lock(m.Sync){m.Leave();return Results.Ok(m.Snapshot());}});
 app.MapPost("/api/play",(HttpContext ctx,Move command)=>{var m=Match(ctx);lock(m.Sync){var error=m.Play(command.Revision,command.A,command.B,command.End);return error==null?Results.Ok(m.Snapshot()):Results.BadRequest(m.Snapshot(error));}});
+app.MapPost("/api/power",(HttpContext ctx,PowerCommand command)=>{var m=Match(ctx);lock(m.Sync){var error=m.Power(command);return error==null?Results.Ok(m.Snapshot()):Results.BadRequest(m.Snapshot(error));}});
 app.MapPost("/api/next",(HttpContext ctx)=>{var m=Match(ctx);lock(m.Sync){var error=m.Next();return error==null?Results.Ok(m.Snapshot()):Results.BadRequest(m.Snapshot(error));}});
 app.Run();
 record Move(int Revision,int A,int B,string End);

@@ -6,12 +6,14 @@ namespace Domino.Application;
 // Every default reproduces patio-rd/1, so an untouched form never changes scoring.
 public sealed record PracticeSettings
 {
+    public string Mode { get; init; }="classic";
+    public string ChaosVariant { get; init; }="visual";
     public string Name { get; init; }="La mesa de los panas";
     public int Target { get; init; }=200;
     public int TurnSeconds { get; init; }
     public int Bonus { get; init; }=25;
     public string Difficulty { get; init; }="intermediate";
-    public string Environment { get; init; }="club";
+    public string Environment { get; init; }="courtyard";
     public bool QuickMessages { get; init; }=true;
     // "ana", "carlos", "luis" or "random": which bot sits in front of the human as partner.
     public string Partner { get; init; }="ana";
@@ -24,6 +26,7 @@ public sealed record PracticeSettings
     public bool PaseSalida { get; init; }=true;
     public string? Validate()
     {
+        if(Mode is not ("classic" or "chaos") || ChaosVariant is not ("visual" or "rules"))return "Modalidad no válida.";
         if(string.IsNullOrWhiteSpace(Name)||Name.Length>40)return "El nombre debe tener entre 1 y 40 caracteres.";
         if(Target is not (100 or 150 or 200))return "Elige una meta de 100, 150 o 200.";
         if(TurnSeconds is not (0 or 15 or 30 or 45))return "Elige sin límite, 15, 30 o 45 segundos.";

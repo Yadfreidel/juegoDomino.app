@@ -28,8 +28,13 @@ export class TableLighting {
     this.lanterns=[-11.2,11.2].map(x=>{const lantern=new THREE.PointLight('#ffb35c',5,16,2);lantern.position.set(x,6,-4);this.group.add(lantern);return lantern;});
   }
   // Club: a neutral overhead key over a dark room with a faint blue bounce. Outdoor: warm late-afternoon sun.
+  // Barrio: night patio, a warm overhead bulb-like key and soft amber bounce; lanterns on.
   setMood(name) {
     if(name===this.mood)return;this.mood=name;const club=name==='club';
+    if(name==='barrio'){
+      this.key.color.set('#ffd29a');this.key.intensity=2.7;this.key.position.set(-1.5,15,1.5);this.hemisphere.color.set('#ffd6a8');this.hemisphere.groundColor.set('#2a170c');this.hemisphere.intensity=.6;
+      this.fill.color.set('#ffdcae');this.fill.intensity=.75;for(const l of this.lanterns)l.visible=true;this.renderer.shadowMap.needsUpdate=true;return;
+    }
     this.key.color.set(club?'#fff3e2':'#ffd7a6');this.key.intensity=club?3.2:3;this.key.position.set(club?-3:-6.5,club?16:15,club?-4:-7);
     this.hemisphere.color.set(club?'#c6d4ff':'#ffe9cc');this.hemisphere.groundColor.set(club?'#1a1424':'#5a3a26');this.hemisphere.intensity=club?.7:.85;
     this.fill.color.set(club?'#dfe8ff':'#fff0dc');this.fill.intensity=club?1:.9;for(const l of this.lanterns)l.visible=!club;

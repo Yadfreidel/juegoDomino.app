@@ -6,19 +6,21 @@ const RAIL=1.45,CHAMFER=1.25,FRAME_TOP=2.42,FELT_TOP=2.09;
 // One table shape per screen orientation: wide for landscape, tall for portrait. Seats never move:
 // 0 (me) is always nearest the camera, 2 (partner) opposite, 1 and 3 the rivals on the sides.
 function tableLayout(name,fx,fz) {
-  const ox=fx+RAIL,oz=fz+RAIL,flagZ=fz+.72;
+  const ox=fx+RAIL,oz=fz+RAIL,flagZ=fz+.72,wide=name==='landscape',flagX=wide?-(fx-1.6):0;
   return Object.freeze({
     name,feltHalf:{x:fx,z:fz},outerHalf:{x:ox,z:oz},frameTop:FRAME_TOP,feltTop:FELT_TOP,
     // Full frame outline: must fit the usable width.
     outline:[[-ox,-(oz-CHAMFER)],[-(ox-CHAMFER),-oz],[ox-CHAMFER,-oz],[ox,-(oz-CHAMFER)],[ox,oz-CHAMFER],[ox-CHAMFER,oz],[-(ox-CHAMFER),oz],[-ox,oz-CHAMFER]],
-    // Must stay between the top HUD and my rack: the far rail, the whole felt and the flag on the near rail.
-    playArea:[[-ox,-(oz-CHAMFER),FRAME_TOP],[-(ox-CHAMFER),-oz,FRAME_TOP],[ox-CHAMFER,-oz,FRAME_TOP],[ox,-(oz-CHAMFER),FRAME_TOP],[fx,fz,FELT_TOP],[-fx,fz,FELT_TOP],[0,flagZ+.4,FRAME_TOP]],
+    // Must stay between the top bar and my rack: the far rail and the whole felt. In portrait also the flag;
+    // in landscape my near rail may sit under my rack, as when you sit at the table.
+    playArea:[[-ox,-(oz-CHAMFER),FRAME_TOP],[-(ox-CHAMFER),-oz,FRAME_TOP],[ox-CHAMFER,-oz,FRAME_TOP],[ox,-(oz-CHAMFER),FRAME_TOP],[fx,fz,FELT_TOP],[-fx,fz,FELT_TOP],...(wide?[]:[[0,flagZ+.4,FRAME_TOP]])],
+    // Landscape: seated first-person view, lower and with the frame filling the width (rails may be cropped).
     // Portrait looks almost straight down so a tall table keeps its proportions on a narrow screen.
-    steepest:name==='portrait'?80:70,
+    steepest:wide?52:80,widthShare:wide?1:.92,
     racks:{1:{x:fx+.35,z:0,yaw:Math.PI/2},2:{x:0,z:-(fz+.32),yaw:Math.PI},3:{x:-(fx+.35),z:0,yaw:-Math.PI/2}},
     // Each label sits on the rail at the far end of that player's support, never over its tiles.
-    labels:{0:[-2.05,flagZ],1:[fx+.4,-2.95],2:[0,-(fz+.62)],3:[-(fx+.4),-2.95]},
-    flagZ
+    labels:{0:wide?[flagX,fz-.05]:[-2.05,flagZ],1:[fx+.4,-2.95],2:[0,-(fz+.62)],3:[-(fx+.4),-2.95]},
+    flagX,flagZ
   });
 }
 export const TABLE_LAYOUTS=Object.freeze({landscape:tableLayout('landscape',5.4,3.3),portrait:tableLayout('portrait',3.3,5.7)});
@@ -74,9 +76,9 @@ export class DominoTableModel {
     const image=new Image();image.onload=()=>{ctx.drawImage(image,0,0,900,600);texture.needsUpdate=true;this.onChange?.();};image.src=FLAG_URL;
     const plaque=new THREE.PlaneGeometry(1.14,.76);plaque.rotateX(-Math.PI/2);
     // Centred on my rail, framed in brass like the reference; printed enamel so it never glares.
-    const z=this.layout.flagZ;
-    this.add(roundedSlab(1.32,.04,.94,.08,.014,2),this.materials.brass,[0,FRAME_TOP+.006,z],true);
-    this.add(plaque,this.own(new THREE.MeshStandardMaterial({map:texture,roughness:.7})),[0,FRAME_TOP+.028,z]);
+    const z=this.layout.flagZ,x=this.layout.flagX;
+    this.add(roundedSlab(1.32,.04,.94,.08,.014,2),this.materials.brass,[x,FRAME_TOP+.006,z],true);
+    this.add(plaque,this.own(new THREE.MeshStandardMaterial({map:texture,roughness:.7})),[x,FRAME_TOP+.028,z]);
   }
   // Baked soft occlusion: under the table on the floor (racks carry their own). Visible on every quality
   // level, so objects keep their weight even where real-time shadows are off.

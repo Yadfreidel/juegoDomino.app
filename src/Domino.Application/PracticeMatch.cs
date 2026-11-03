@@ -3,7 +3,7 @@ using Domino.Domain;
 namespace Domino.Application;
 
 // Graphical local adapter: one human and three bots, sharing the production rule engine.
-public sealed class PracticeMatch
+public sealed partial class PracticeMatch
 {
     readonly IShuffleProvider shuffle;
     readonly IClock clock;
@@ -45,15 +45,16 @@ public sealed class PracticeMatch
     public void Start()
     {
         if(accepted)return;
-        configured=true;accepted=true;game=new Game(Rules(),shuffle.Shuffle());version++;ResetDeadline();nextBot=clock.UtcNow.AddSeconds(1.1);
+        ResetChaos();configured=true;accepted=true;game=new Game(Rules(),shuffle.Shuffle());version++;ResetDeadline();nextBot=clock.UtcNow.AddSeconds(1.1);
     }
     public void Leave()
     {
-        accepted=false;configured=false;game=null;deadline=null;wins[0]=wins[1]=0;handNumber=1;version++;
+        ResetChaos();accepted=false;configured=false;game=null;deadline=null;wins[0]=wins[1]=0;handNumber=1;version++;
     }
     public string? Play(int revision,int a,int b,string end)
     {
         if(!accepted||game==null)return "Acepta las reglas para comenzar.";
+        if(clock.UtcNow<visualUntil)return "Espera a que termine el efecto.";
         Tick(); // Resolve an expired turn before accepting a late client command.
         if(revision!=version)return "La mesa cambió. Selecciona la ficha otra vez.";
         if(end!="left"&&end!="right")return "Elige una punta válida.";
@@ -67,19 +68,27 @@ public sealed class PracticeMatch
     }
     void Commit(Tile tile,End end)
     {
+        powerTurnUses=0;
         game!.Play(game.Turn,tile,end);version++;ResetDeadline();
         nextBot=clock.UtcNow.AddSeconds(1.35);
+        if(game.Result!=null){Array.Clear(shields);reveal=null;}
         if(game.Result is {Void:false})wins[game.Result.Winner%2]++;
     }
     public void Tick()
     {
-        if(!accepted||game==null||game.Result!=null)return;
+        if(!accepted||game==null||game.Result!=null||clock.UtcNow<visualUntil)return;
         if(deadline.HasValue&&clock.UtcNow>=deadline.Value)
         {
             var automatic=game.Moves(game.Turn).OrderBy(m=>m.tile.A).ThenBy(m=>m.tile.B).ThenBy(m=>m.end).First();
             Commit(automatic.tile,automatic.end);return;
         }
         if(game.Turn==0||clock.UtcNow<nextBot)return;
+        if(settings.Mode=="chaos"&&settings.ChaosVariant=="rules"&&powerTurnUses==0&&powerUses[game.Turn]<ChaosCatalog.PerHand&&random(4)==0)
+        {
+            int actor=game.Turn;var candidates=new[]{"swap","look","shield","reverse","deal"};
+            Power(new PowerCommand(Guid.NewGuid().ToString("N"),version,candidates[random(candidates.Length)],(actor+1)%4),actor);
+            nextBot=clock.UtcNow.AddSeconds(1.35);return;
+        }
         // This view contains only the active bot's own playable tiles and public ends.
         var moves=game.Moves(game.Turn);
         var m=settings.Difficulty=="easy"?moves.OrderBy(m=>m.tile.A).ThenBy(m=>m.tile.B).ThenBy(m=>m.end).First():
@@ -99,12 +108,12 @@ public sealed class PracticeMatch
         bool finished=game.Scores.Any(s=>s>=game.Rules.Target);
         int[]? score=finished?null:game.Scores;int? opener=finished?null:game.Rules.NextOpener(game.Opener,game.Result);
         if(finished){wins[0]=wins[1]=0;handNumber=1;}else handNumber++;
-        game=new Game(Rules(),shuffle.Shuffle(),score,opener);version++;ResetDeadline();nextBot=clock.UtcNow.AddSeconds(1.1);
+        ResetChaos();game=new Game(Rules(),shuffle.Shuffle(),score,opener);version++;ResetDeadline();nextBot=clock.UtcNow.AddSeconds(1.1);
         return null;
     }
     public object Snapshot(string? error=null)=>new
     {
-        revision=version,sessionId,configured,accepted,settings,handNumber,rulesVersion=Rules().Version,
+        chaos=ChaosSnapshot(),revision=version,sessionId,configured,accepted,settings,handNumber,rulesVersion=Rules().Version,
         seats=seating.Select((name,seat)=>new{name,bot=seat!=0,team=seat%2==0?"us":"them"}).ToArray(),turn=game?.Turn??0,error,
         deadline=game?.Result==null?deadline:null,serverNow=clock.UtcNow,
         hand=(game?.Hand(0)??Array.Empty<Tile>()).Select(t=>new{a=t.A,b=t.B}).ToArray(),

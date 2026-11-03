@@ -67,8 +67,8 @@ export function createTileMaterials() {
     // Blue lacquered back, the same on every reverse: a lattice and border, nothing that could read as a pip.
     back:new THREE.MeshStandardMaterial({map:reversePattern(),roughness:.38}),
     contact:new THREE.MeshBasicMaterial({map:softShadowTexture(128,64,.26,.36),transparent:true,depthWrite:false,toneMapped:false,opacity:.78,polygonOffset:true,polygonOffsetFactor:-1}),
-    // Placement preview: a light mint tint over ivory, translucent but with fully dark pips.
-    ghostIvory:new THREE.MeshStandardMaterial({color:'#cdeedb',transparent:true,opacity:.62,depthWrite:false,roughness:.5,emissive:'#2f7152',emissiveIntensity:.18}),
+    // Placement preview: translucent warm ivory with an amber glow, pips fully dark.
+    ghostIvory:new THREE.MeshStandardMaterial({color:'#f7e6b8',transparent:true,opacity:.62,depthWrite:false,roughness:.5,emissive:'#6b4a12',emissiveIntensity:.2}),
     ghostInk:new THREE.MeshStandardMaterial({color:'#0f2a1f',transparent:true,opacity:.92,depthWrite:false,roughness:.7,side:THREE.DoubleSide})
   };
 }

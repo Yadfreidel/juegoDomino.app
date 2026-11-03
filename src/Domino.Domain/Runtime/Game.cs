@@ -73,6 +73,7 @@ namespace Domino.Domain
         readonly List<Placement> chain = new List<Placement>();
         readonly int[] scores;
         readonly List<string> events = new List<string>();
+        int direction=1;
         int opener, lastPlayer = -1, passes;
         bool openingCandidate;
         readonly bool forceSix;
@@ -119,20 +120,32 @@ namespace Domino.Domain
             else chain.Add(new Placement(tile,Right,tile.Other(Right)));
             hands[seat].Remove(tile); Revision++; events.Add($"Asiento {seat}: {tile}"); lastPlayer=seat; passes=0;
             if(hands[seat].Count==0) { Finish(seat,cap,"Dominó"); return; }
-            Turn=(seat+1)%4;
+            Turn=(seat+direction+4)%4;
             // Automatic passes have no client command and cannot be forged.
             while(Moves(Turn).Length==0)
             {
                 events.Add($"Asiento {Turn}: Paso"); passes++;
-                if(first && Turn==(opener+1)%4) openingCandidate=true;
+                if(first && Turn==(opener+direction+4)%4) openingCandidate=true;
                 if(Turn==(opener+2)%4) openingCandidate=false;
-                Turn=(Turn+1)%4;
+                Turn=(Turn+direction+4)%4;
                 if(passes==4) { FinishBlock(lastPlayer); return; }
             }
         }
+        // Only the authority calls these after validating a Chaos command.
+        public void ReverseTurns() { direction=-direction; }
+        public void SwapHands(int seat,int target,int ownIndex,int otherIndex)
+        {
+            var own=hands[seat][ownIndex];hands[seat][ownIndex]=hands[target][otherIndex];hands[target][otherIndex]=own;
+        }
+        public void Redistribute(Func<int,int> random)
+        {
+            var pool=hands.SelectMany(h=>h).ToArray();
+            for(int i=pool.Length-1;i>0;i--){int j=random(i+1);(pool[i],pool[j])=(pool[j],pool[i]);}
+            int offset=0;foreach(var hand in hands){int count=hand.Count;hand.Clear();hand.AddRange(pool.Skip(offset).Take(count));offset+=count;}
+        }
         void FinishBlock(int blocker)
         {
-            int rival=(blocker+1)%4;
+            int rival=(blocker+direction+4)%4;
             int mine, theirs, winner;
             if(Rules.Block==BlockRule.TeamTotals)
             {

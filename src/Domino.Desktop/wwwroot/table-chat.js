@@ -30,10 +30,10 @@ export class TableChat {
   }
   say(seat,text){
     if(!this.enabled()||(seat>0&&this.muted(seat)))return;
-    const out=seat===0?$('reaction-output'):$('player-'+seat).querySelector('.chat-bubble');
+    const out=$('player-'+seat).querySelector('.chat-bubble');
     out.textContent=text;out.classList.add('visible');clearTimeout(this.timers.get(seat));this.timers.set(seat,setTimeout(()=>this.clear(seat),2600));
   }
-  clear(seat){const out=seat===0?$('reaction-output'):$('player-'+seat).querySelector('.chat-bubble');out.textContent='';out.classList.remove('visible');}
+  clear(seat){const out=$('player-'+seat).querySelector('.chat-bubble');out.textContent='';out.classList.remove('visible');}
   update(state){
     const fresh=this.state&&state.handNumber===this.hand?newEvents(this.events,state.events):[];
     this.state=state;this.events=state.events;this.hand=state.handNumber;this.render();

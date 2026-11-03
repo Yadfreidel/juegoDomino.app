@@ -1,10 +1,10 @@
 import {seatNames,rulesSummary,conditionsSummary,changedConditions,isDefaultRules,RULE_DEFAULTS} from './table-roster.js';
 
 const $=id=>document.getElementById(id);
-const fields={name:'table-name',target:'table-target',turnSeconds:'table-time',difficulty:'table-difficulty',environment:'table-environment',bonus:'table-bonus',quickMessages:'table-messages',
+const fields={mode:'table-mode',chaosVariant:'table-chaos',name:'table-name',target:'table-target',turnSeconds:'table-time',difficulty:'table-difficulty',environment:'table-environment',bonus:'table-bonus',quickMessages:'table-messages',
   partner:'table-partner',nextOpener:'rule-next',counting:'rule-counting',blockRule:'rule-block',blockTie:'rule-tie',capicua:'rule-capicua',pasoCorrido:'rule-run',paseSalida:'rule-opening'};
 const numeric=new Set(['target','turnSeconds','bonus']);
-const defaults={name:'La mesa de los panas',target:200,turnSeconds:0,difficulty:'intermediate',environment:'club',quickMessages:true,partner:'ana',...RULE_DEFAULTS};
+const defaults={mode:'classic',chaosVariant:'visual',name:'La mesa de los panas',target:200,turnSeconds:0,difficulty:'intermediate',environment:'courtyard',quickMessages:true,partner:'ana',...RULE_DEFAULTS};
 const practiceDefaults={...defaults,name:'Práctica en el patio'};
 const routes=['home','config','lobby','game','profile','join'];
 
@@ -41,6 +41,7 @@ export class PatioNavigation {
     const state=this.getState();
     if(route==='game'&&!state?.accepted)route='home';
     if(route==='lobby'&&(!state?.configured||state.accepted))route=state?.accepted?'home':'config';
+    if(route!=='game')window.dispatchEvent(new Event('chaos-cancel'));
     this.route=route;document.body.classList.toggle('outside-game',route!=='game');
     for(const screen of document.querySelectorAll('.app-screen'))screen.hidden=screen.id!=='screen-'+route;
     $('screens').hidden=route==='game';

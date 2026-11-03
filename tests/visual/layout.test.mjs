@@ -27,13 +27,15 @@ function viewFor(width,height,insets){
   const view=new TableCamera(camera,canvas,{outline:TABLE.outline,playArea:TABLE.playArea,surfaceY:TABLE.feltTop,topY:TABLE.frameTop,felt:TABLE.feltHalf});
   view.getInsets=()=>insets;view.resize();view.update(1,true);return {view,camera,rect};
 }
-test('encuadre elevado: mesa ~90 % del ancho útil y paño entre marcador y mano',()=>{
-  // Landscape phones with the compact HUD: scoreboard ~40 px, hand ~130 px.
-  for(const [w,h,top,bottom] of [[844,390,40,128],[740,360,40,124],[932,430,40,132],[1440,900,135,230],[1280,720,120,215]]) {
-    const {view}=viewFor(w,h,{top,bottom,left:8,right:8});
+test('primera persona en horizontal: mesa a todo el ancho útil, paño completo entre la barra superior y mi mano',()=>{
+  // Landscape with the compact HUD: top bar ~46 px, my rack ~110 px, side rail ~60 px on the right.
+  for(const [w,h,top,bottom] of [[844,390,46,112],[800,360,46,104],[932,430,46,118],[1440,900,60,190],[1280,720,58,175]]) {
+    const {view}=viewFor(w,h,{top,bottom,left:8,right:62});view.setTable(TABLE);view.update(1,true);
     const outline=TABLE.outline.map(([x,z])=>view.project(new Vector3(x,TABLE.frameTop,z)));
-    const share=(Math.max(...outline.map(p=>p.x))-Math.min(...outline.map(p=>p.x)))/(w-16);
-    assert.ok(share>=.85&&share<=.95,`ancho ${w}x${h}: ${share.toFixed(3)}`);
+    const share=(Math.max(...outline.map(p=>p.x))-Math.min(...outline.map(p=>p.x)))/(w-70);
+    assert.ok(share>=.95,`ancho ${w}x${h}: ${share.toFixed(3)}`);
+    const pitch=Math.asin((view.camera.position.y-TABLE.feltTop)/view.camera.position.distanceTo(view.target));
+    assert.ok(pitch<=52*Math.PI/180+.01,`asiento: inclinación ${w}x${h}`);
     for(const [x,z,y] of TABLE.playArea){const p=view.project(new Vector3(x,y,z));assert.ok(p.y>=top-2&&p.y<=h-bottom+2&&p.x>=0&&p.x<=w,`zona de juego visible ${w}x${h} (${x},${z}) → ${p.x.toFixed(0)},${p.y.toFixed(0)}`);}
     assert.ok(view.camera.position.z>0&&view.camera.position.y>TABLE.frameTop+3,'Siempre desde el lado del jugador y por encima');
   }

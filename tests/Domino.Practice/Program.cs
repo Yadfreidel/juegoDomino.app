@@ -9,7 +9,7 @@ var clock=new FakeClock();var shuffle=new FixedShuffle();var match=new PracticeM
 Check(View(match).GetProperty("hand").GetArrayLength()==0&&shuffle.Calls==0,"No reparte antes de aceptar");
 Check(match.Configure(new PracticeSettings{Target=125})!=null,"Rechaza meta inválida");
 Check(match.Configure(new PracticeSettings{Environment="estadio"})!=null,"Rechaza escenario inexistente");
-Check(new PracticeSettings().Environment=="club"&&new PracticeSettings().Validate()==null,"Club de dominó es el escenario predeterminado y válido");
+Check(new PracticeSettings().Environment=="courtyard"&&new PracticeSettings{Environment="club"}.Validate()==null,"Patio de barrio es el escenario predeterminado; el club sigue disponible");
 Check(match.Configure(new PracticeSettings{TurnSeconds=10})!=null,"Rechaza reloj inválido");
 Check(match.Configure(new PracticeSettings{Difficulty="cheat"})!=null,"Rechaza bot desconocido");
 Check(match.Configure(new PracticeSettings{Target=100,TurnSeconds=15,Difficulty="hard",Bonus=0})==null,"Configura práctica");
@@ -62,6 +62,39 @@ var nextHand=View(teams);
 // FixedShuffle deals the 6–6 to seat 3, so that seat must open regardless of who won.
 Check(nextHand.GetProperty("turn").GetInt32()==3&&nextHand.GetProperty("chain").GetArrayLength()==0,"Mano posterior exige 6–6 con esa variante");
 Check(Seats(teams)=="tu,carlos,ana,luis","Las parejas se mantienen entre manos");
+// Chaos authority: stale commands and unavailable targets must never consume a use.
+var chaos=new PracticeMatch(new FixedShuffle(),clock,n=>n-1);
+chaos.Configure(new PracticeSettings{Mode="chaos",ChaosVariant="rules"});chaos.Start();
+for(int n=0;n<10&&View(chaos).GetProperty("turn").GetInt32()!=0;n++){clock.Advance(2);chaos.Tick();}
+var cv=View(chaos);int cr=cv.GetProperty("revision").GetInt32();
+Check(chaos.Power(new("bad",cr,"look",2))!=null,"Caos rechaza pareja como rival");
+Check(View(chaos).GetProperty("chaos").GetProperty("remaining").GetInt32()==3,"Objetivo inv?lido no consume");
+var cmd=new PowerCommand("reverse-1",cr,"reverse");
+Check(chaos.Power(cmd)==null&&chaos.Power(cmd)==null,"Poder idempotente");
+Check(View(chaos).GetProperty("chaos").GetProperty("remaining").GetInt32()==2,"Duplicado consume una vez");
+Check(chaos.Power(new("second",View(chaos).GetProperty("revision").GetInt32(),"shield"))!=null,"Un poder por turno");
+var deck=Tile.Deck();var cg=new Game(new RuleSet(),deck,startingSeat:0);
+var original=Enumerable.Range(0,4).Select(cg.Count).ToArray();cg.Redistribute(n=>0);
+Check(Enumerable.Range(0,4).SelectMany(cg.Hand).Distinct().Count()==28,"Reparto conserva las 28 ?nicas");
+Check(Enumerable.Range(0,4).Select(cg.Count).SequenceEqual(original),"Reparto conserva cantidades");
+cg.SwapHands(0,1,0,0);
+Check(Enumerable.Range(0,4).SelectMany(cg.Hand).Distinct().Count()==28,"Cambio conserva fichas ?nicas");
+var classic=new PracticeMatch(new FixedShuffle(),clock);classic.Start();
+Check(classic.Power(new("classic",View(classic).GetProperty("revision").GetInt32(),"shield"))!=null,"Cl?sico rechaza poderes");
+var shieldMatch=new PracticeMatch(new HumanOpeningShuffle(),clock,n=>n-1);
+shieldMatch.Configure(new PracticeSettings{Mode="chaos",ChaosVariant="rules"});shieldMatch.Start();
+var sv=View(shieldMatch);
+Check(shieldMatch.Power(new("protect",sv.GetProperty("revision").GetInt32(),"shield"))==null,"Escudo activo antes de jugar");
+var sm=View(shieldMatch).GetProperty("moves")[0];
+shieldMatch.Play(View(shieldMatch).GetProperty("revision").GetInt32(),sm.GetProperty("a").GetInt32(),sm.GetProperty("b").GetInt32(),sm.GetProperty("end").GetString()!);
+sv=View(shieldMatch);int attacker=sv.GetProperty("turn").GetInt32();
+if(attacker%2==1){
+ Check(shieldMatch.Power(new("attack",sv.GetProperty("revision").GetInt32(),"look",0),attacker)==null,"Rival activa ataque");
+ Check(!View(shieldMatch).GetProperty("chaos").GetProperty("shields")[0].GetBoolean(),"Escudo bloquea y se consume");
+ Check(View(shieldMatch).GetProperty("chaos").GetProperty("reveal").ValueKind==JsonValueKind.Null,"Mirada rival no filtra ficha privada");
+}
 Console.WriteLine($"PASS práctica: {checks} comprobaciones de sala, configuración, reloj, bots, privacidad y ciclo de mano.");
 sealed class FakeClock:IClock{public DateTimeOffset UtcNow{get;private set;}=new(2026,11,2,16,0,0,TimeSpan.Zero);public void Advance(int seconds)=>UtcNow=UtcNow.AddSeconds(seconds);}
 sealed class FixedShuffle:IShuffleProvider{public int Calls{get;private set;}public Tile[] Shuffle(){Calls++;return Tile.Deck();}}
+
+sealed class HumanOpeningShuffle:IShuffleProvider{public Tile[] Shuffle()=>new[]{new Tile(6,6)}.Concat(Tile.Deck().Where(t=>!t.Equals(new Tile(6,6)))).ToArray();}
